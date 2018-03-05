@@ -1,0 +1,142 @@
+$max-app-width: 1200px
+$max-nav-height: 47px
+$max-feed-with: 800px
+$sidebar-with: 150px
+
+$full-width: 100%
+//$half-width: 50%
+
+// Extending
+%flex-container
+  display: flex
+  flex-wrap: wrap
+
+%full-flex-item
+  display: inline-block
+  width: $full-width
+
+html
+  background-color: #f9f9f9
+
+body
+  max-width: $max-app-width
+  margin: 0 auto
+
+.ui.header.app-header
+  margin: 0.5rem 1rem
+
+.my-nav
+  height: $max-nav-height
+
+.segment.my-side-bar
+  margin-top: 0
+  min-height: calc(100vh - #{$max-nav-height})
+
+.ui.segment, .ui.attached.inverted.menu
+  border-radius: 0
+
+.voting
+  @extend %flex-container
+  width: $full-width
+
+.ui.feed>.event>.label .icon, .voting .count, .comment .voting .icon
+  @extend %flex-container
+  @extend %full-flex-item
+  color: rgba(0,0,0,.5)
+  transition: .2s all ease
+
+.ui.feed>.event>.label .icon.thumbs
+  font-size: 1.2rem
+  margin-right: 0.4rem
+  width: 50%
+
+.comment .voting .icon.thumbs
+  font-size: 1.1rem
+  margin-right: 0.1rem
+  width: 50%
+
+.comment .voting .icon
+  font-size: 1.3rem
+  margin: 0 auto
+
+.icon.triangle:hover
+  transform: scale(1.2)
+
+
+.ui.feed > .event > .label .voting:hover .icon.thumbs, .comment .voting:hover .icon.thumbs
+  color: #1b90fe
+
+.voting:hover .count
+  color: rgba(0,0,0,.95)
+
+.ui.feed>.event>.content .extra.text
+  max-width: $max-feed-with
+
+.ui.comments, .ui.feed > .event
+  max-width: $max-feed-with
+
+.ui.segment
+  padding: 1.2em 4.5em
+
+.ui.feed>.event
+  width: calc(100% - #{$sidebar-with})
+
+.ui.comments .comment
+  position: relative
+
+.comment .voting
+  position: absolute
+  left: -3rem
+  top: 0
+  width: 40px
+
+.ui.comments .comment
+  margin-left: 45px
+
+.ui.comments .comment .actions
+  position: absolute
+  top: 0
+  right: 0
+  padding: 0.5em 0 0
+
+.actions i.icon
+  font-size: 1.1em
+  transition: .4s color ease
+
+.ui.comments .comment .actions a
+  margin: 0 0.6em 0 0
+
+.ui.comments .comment
+  margin-bottom: 1.7rem
+
+.ui.comments .comment .actions a:hover .delete, .ui.comments .comment:hover .actions a .delete, .feed-actions a:hover .delete
+  color: #ff2733
+
+.ui.comments .comment .actions a:hover .edit, .ui.comments .comment:hover .actions a .edit, .feed-actions a:hover .edit
+  color: rgba(0,0,0,.8)
+
+.ui.comments .comment .actions a, .feed-actions a
+    color: rgba(0,0,0,.2);
+
+.ui.feed > .event
+  position: relative
+
+.feed-actions
+  @extend %flex-container
+  position: absolute
+  top: 0
+  right: 0
+
+.feed-actions a
+  width: 50%
+  padding-left: 0.7em
+
+.feed-actions a i.icon
+  transition: .4s color ease
+  font-size: 1em
+
+.comments .more
+  margin-left: 0.4rem
+
+.uppercase
+  text-transform: uppercase

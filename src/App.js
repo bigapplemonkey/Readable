@@ -15,8 +15,32 @@ import {
 } from "semantic-ui-react";
 
 class App extends Component {
-  state = {
-    expandComments: true
+  constructor(props) {
+    super(props);
+    this.state = {
+      expandComments: true,
+      toggleSideBar: true
+    };
+    this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+  }
+
+  componentDidMount() {
+    this.updateWindowDimensions();
+    window.addEventListener("resize", this.updateWindowDimensions);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateWindowDimensions);
+  }
+
+  updateWindowDimensions() {
+    const width = window.innerWidth;
+    if (width < 731) {
+      if (this.state.toggleSideBar) this.setState({ toggleSideBar: false });
+    } else {
+      if (!this.state.toggleSideBar) this.setState({ toggleSideBar: true });
+    }
+    //this.setState({ width: window.innerWidth, height: window.innerHeight });
   }
 
   getRandomPhoto() {
@@ -24,17 +48,22 @@ class App extends Component {
     const randAnimal = animals[Math.floor(Math.random() * animals.length)];
     return `https://api.adorable.io/avatars/35/${randAnimal}.png`;
   }
+
+  onClick() {
+    this.setState({ toggleSideBar: !this.state.toggleSideBar });
+  }
+
   render() {
     const self = this;
     return (
       <div>
-        <Navigation />
+        <Navigation onClick={this.onClick.bind(this)} />
         <Sidebar.Pushable as={Segment} className="my-side-bar">
           <Sidebar
             as={Menu}
             animation="push"
             width="thin"
-            visible={true}
+            visible={this.state.toggleSideBar}
             icon="labeled"
             vertical
             inverted
@@ -56,14 +85,23 @@ class App extends Component {
               Udacity
             </Menu.Item>
           </Sidebar>
-          <Sidebar.Pusher className="post-content">
+          <Sidebar.Pusher
+            className="post-content"
+            dimmed={this.state.toggleSideBar}
+          >
             <Segment basic>
               <Header as="h3">Application Content</Header>
-              <Feed size="large">
+              <Feed>
                 <Feed.Event>
-                  <div className="feed-actions"><a><Icon name='edit'/></a><a><Icon name='delete'/></a></div>
+                  <div className="feed-actions">
+                    <a>
+                      <Icon name="edit" />
+                    </a>
+                    <a>
+                      <Icon name="delete" />
+                    </a>
+                  </div>
                   <Feed.Label
-                    image={this.getRandomPhoto()}
                     children={
                       <div>
                         <img alt="" src={self.getRandomPhoto()} />
@@ -79,7 +117,7 @@ class App extends Component {
                   />
                   <Feed.Content>
                     <Feed.Summary>
-                      Joe Henderson posted
+                      <div className="poster-name">Joe Henderson posted</div>
                       <Feed.Date>3 days ago</Feed.Date>
                     </Feed.Summary>
                     <Feed.Extra text>
@@ -93,8 +131,21 @@ class App extends Component {
                     </Feed.Extra>
 
                     <Comment.Group>
+                      <a className="add-comment">
+                        <Icon name="comment outline" /> Comment
+                      </a>
                       <Header as="h4" dividing>
-                        4 Comments <a className="more" onClick={() => this.setState({expandComments: !this.state.expandComments})}>...more</a>
+                        4 Comments{" "}
+                        <a
+                          className="more"
+                          onClick={() =>
+                            this.setState({
+                              expandComments: !this.state.expandComments
+                            })
+                          }
+                        >
+                          ...more
+                        </a>
                       </Header>
 
                       <Comment>
@@ -113,8 +164,8 @@ class App extends Component {
                           </Comment.Metadata>
                           <Comment.Text>How artistic!</Comment.Text>
                           <Comment.Actions>
-                            <Comment.Action children={<Icon name='edit'/>}/>
-                            <Comment.Action children={<Icon name='delete'/>}/>
+                            <Comment.Action children={<Icon name="edit" />} />
+                            <Comment.Action children={<Icon name="delete" />} />
                           </Comment.Actions>
                         </Comment.Content>
                       </Comment>
@@ -135,13 +186,20 @@ class App extends Component {
                           </Comment.Metadata>
                           <Comment.Text>How artistic!</Comment.Text>
                           <Comment.Actions>
-                            <Comment.Action children={<Icon name='edit'/>}/>
-                            <Comment.Action children={<Icon name='delete'/>}/>
+                            <Comment.Action children={<Icon name="edit" />} />
+                            <Comment.Action children={<Icon name="delete" />} />
                           </Comment.Actions>
                         </Comment.Content>
                       </Comment>
 
                       <Comment collapsed={this.state.expandComments}>
+                        <div className="voting">
+                          <Icon name="triangle up" />
+                          <div className="count">
+                            <Icon name="thumbs up" />2
+                          </div>
+                          <Icon name="triangle down" />
+                        </div>
                         <Comment.Avatar src={this.getRandomPhoto()} />
                         <Comment.Content>
                           <Comment.Author as="a">Elliot Fu</Comment.Author>
@@ -157,12 +215,20 @@ class App extends Component {
                             </p>
                           </Comment.Text>
                           <Comment.Actions>
-                            <Comment.Action>Reply</Comment.Action>
+                            <Comment.Action children={<Icon name="edit" />} />
+                            <Comment.Action children={<Icon name="delete" />} />
                           </Comment.Actions>
                         </Comment.Content>
                       </Comment>
 
                       <Comment collapsed={this.state.expandComments}>
+                        <div className="voting">
+                          <Icon name="triangle up" />
+                          <div className="count">
+                            <Icon name="thumbs up" />2
+                          </div>
+                          <Icon name="triangle down" />
+                        </div>
                         <Comment.Avatar src={this.getRandomPhoto()} />
                         <Comment.Content>
                           <Comment.Author as="a">Joe Henderson</Comment.Author>
@@ -173,7 +239,8 @@ class App extends Component {
                             Dude, this is awesome. Thanks so much
                           </Comment.Text>
                           <Comment.Actions>
-                            <Comment.Action>Reply</Comment.Action>
+                            <Comment.Action children={<Icon name="edit" />} />
+                            <Comment.Action children={<Icon name="delete" />} />
                           </Comment.Actions>
                         </Comment.Content>
                       </Comment>

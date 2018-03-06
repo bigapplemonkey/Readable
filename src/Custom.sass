@@ -1,7 +1,9 @@
 $max-app-width: 1200px
+$min-app-width: 340px
 $max-nav-height: 47px
 $max-feed-with: 800px
 $sidebar-with: 150px
+$mobile-break-point: 730px
 
 $full-width: 100%
 //$half-width: 50%
@@ -20,6 +22,7 @@ html
 
 body
   max-width: $max-app-width
+  min-width: $min-app-width
   margin: 0 auto
 
 .ui.header.app-header
@@ -28,7 +31,7 @@ body
 .my-nav
   height: $max-nav-height
 
-.segment.my-side-bar
+.segment.my-side-bar, .pushable>.pusher
   margin-top: 0
   min-height: calc(100vh - #{$max-nav-height})
 
@@ -71,6 +74,7 @@ body
 
 .ui.feed>.event>.content .extra.text
   max-width: $max-feed-with
+  margin-bottom: 2.3rem
 
 .ui.comments, .ui.feed > .event
   max-width: $max-feed-with
@@ -116,7 +120,14 @@ body
   color: rgba(0,0,0,.8)
 
 .ui.comments .comment .actions a, .feed-actions a
-    color: rgba(0,0,0,.2);
+  color: rgba(0,0,0,.2)
+
+.ui.comments a.add-comment
+  transition: .3s color ease
+  color: rgba(0,0,0,.7)
+
+.ui.comments a.add-comment:hover
+  color: #4183c4
 
 .ui.feed > .event
   position: relative
@@ -138,5 +149,72 @@ body
 .comments .more
   margin-left: 0.4rem
 
+.ui.comments
+  position: relative
+
+.ui.comments .add-comment
+  position: absolute
+  top: -2.2rem
+  left: -3.2rem
+
+.ui.top.attached.menu>.item:first-child.hamburger-link
+  display: none
+
 .uppercase
   text-transform: uppercase
+
+.pushable>.pusher.dimmed:after
+  width: 0!important
+  height:0!important
+
+.ui.feed
+  font-size: 1.14285714rem
+
+.poster-name
+  display: inline-block
+
+
+@media (max-width: $mobile-break-point)
+  .ui.top.attached.menu>.item:first-child.hamburger-link
+    display: flex
+
+  .ui.feed>.event
+    width: 100%
+
+  .ui.segment
+    padding: 1.2em 1.5em
+
+  .pushable>.pusher.dimmed:after
+    width: 100% !important
+    height:100% !important
+
+  .ui.feed
+    font-size: 1rem
+
+  .ui.comments .comment .actions
+    top: -0.2rem
+
+  .ui.feed>.event>.label+.content
+    margin: .5em 0 .35em 0.9em
+
+  .ui.comments .comment>.avatar~.content
+    margin-left: 3.2em
+
+  .ui.comments .comment
+    margin-left: 38px
+
+  .comment .voting
+    left: -2.8rem
+
+@media (max-width: 420px)
+  .ui.comments .comment .metadata, .ui.feed>.event>.content .summary>.date
+    margin-left: 0
+    width: 100%
+
+  .ui.comments .comment
+    margin-bottom: 0.8rem
+
+
+
+
+

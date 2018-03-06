@@ -10,7 +10,7 @@ class Navigation extends Component {
     return (
       <div>
         <Menu attached='top' className="my-nav" inverted>
-          <Menu.Item name='gamepad' active={this.state.activeItem === 'gamepad'} onClick={this.handleItemClick}>
+          <Menu.Item name='gamepad' className="hamburger-link" active={false} onClick={this.props.onClick}>
             <Icon name='sidebar' />
           </Menu.Item>
           <Header as='h1' size='tiny' className="app-header" inverted>

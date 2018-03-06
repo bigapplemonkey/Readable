@@ -11,7 +11,9 @@ import {
   Icon,
   Header,
   Feed,
-  Comment
+  Comment,
+  Modal,
+  Button
 } from "semantic-ui-react";
 
 class App extends Component {
@@ -19,7 +21,8 @@ class App extends Component {
     super(props);
     this.state = {
       expandComments: true,
-      toggleSideBar: true
+      toggleSideBar: true,
+      modalOpen: false
     };
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
   }
@@ -51,6 +54,10 @@ class App extends Component {
 
   onClick() {
     this.setState({ toggleSideBar: !this.state.toggleSideBar });
+  }
+
+  toggleModal() {
+    this.setState({ modalOpen: !this.state.modalOpen });
   }
 
   render() {
@@ -97,7 +104,7 @@ class App extends Component {
                     <a>
                       <Icon name="edit" />
                     </a>
-                    <a>
+                    <a onClick={this.toggleModal.bind(this)}>
                       <Icon name="delete" />
                     </a>
                   </div>
@@ -165,7 +172,7 @@ class App extends Component {
                           <Comment.Text>How artistic!</Comment.Text>
                           <Comment.Actions>
                             <Comment.Action children={<Icon name="edit" />} />
-                            <Comment.Action children={<Icon name="delete" />} />
+                            <Comment.Action children={<Icon name="delete" onClick={this.toggleModal.bind(this)} />} />
                           </Comment.Actions>
                         </Comment.Content>
                       </Comment>
@@ -187,7 +194,7 @@ class App extends Component {
                           <Comment.Text>How artistic!</Comment.Text>
                           <Comment.Actions>
                             <Comment.Action children={<Icon name="edit" />} />
-                            <Comment.Action children={<Icon name="delete" />} />
+                            <Comment.Action children={<Icon name="delete" onClick={this.toggleModal.bind(this)} />} />
                           </Comment.Actions>
                         </Comment.Content>
                       </Comment>
@@ -216,7 +223,7 @@ class App extends Component {
                           </Comment.Text>
                           <Comment.Actions>
                             <Comment.Action children={<Icon name="edit" />} />
-                            <Comment.Action children={<Icon name="delete" />} />
+                            <Comment.Action children={<Icon name="delete" onClick={this.toggleModal.bind(this)} />} />
                           </Comment.Actions>
                         </Comment.Content>
                       </Comment>
@@ -240,7 +247,7 @@ class App extends Component {
                           </Comment.Text>
                           <Comment.Actions>
                             <Comment.Action children={<Icon name="edit" />} />
-                            <Comment.Action children={<Icon name="delete" />} />
+                            <Comment.Action children={<Icon name="delete" onClick={this.toggleModal.bind(this)} />} />
                           </Comment.Actions>
                         </Comment.Content>
                       </Comment>
@@ -272,6 +279,22 @@ class App extends Component {
             </Segment>
           </Sidebar.Pusher>
         </Sidebar.Pushable>
+        <Modal open={this.state.modalOpen} basic size="small" style={{marginTop: '30vh'}}>
+          <Header icon="trash" content="Delete Comment" />
+          <Modal.Content>
+            <p>
+              Are you sure you want to delete this comment?
+            </p>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button basic color="red" onClick={this.toggleModal.bind(this)} inverted>
+              <Icon name="remove" /> No
+            </Button>
+            <Button color="green" onClick={this.toggleModal.bind(this)} inverted>
+              <Icon name="checkmark" /> Yes
+            </Button>
+          </Modal.Actions>
+        </Modal>
       </div>
     );
   }

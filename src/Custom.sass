@@ -173,6 +173,10 @@ body
 .poster-name
   display: inline-block
 
+.ui.small.modal
+  margin: 0 auto
+  max-width: 520px
+
 
 @media (max-width: $mobile-break-point)
   .ui.top.attached.menu>.item:first-child.hamburger-link
@@ -206,15 +210,17 @@ body
   .comment .voting
     left: -2.8rem
 
-@media (max-width: 420px)
+@media (max-width: 531px)
+  .ui.inverted.menu .item.search
+    display: none
+
+@media (max-width: 450px)
   .ui.comments .comment .metadata, .ui.feed>.event>.content .summary>.date
     margin-left: 0
     width: 100%
 
   .ui.comments .comment
     margin-bottom: 0.8rem
-
-
 
 
 

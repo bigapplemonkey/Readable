@@ -9,7 +9,7 @@ class Navigation extends Component {
   render() {
     return (
       <div>
-        <Menu attached='top' className="my-nav" inverted>
+        <Menu attached='top' className="my-nav fixed" inverted>
           <Menu.Item name='gamepad' className="hamburger-link" active={false} onClick={this.props.onClick}>
             <Icon name='sidebar' />
           </Menu.Item>

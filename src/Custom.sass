@@ -4,6 +4,7 @@ $max-nav-height: 47px
 $max-feed-with: 800px
 $sidebar-with: 150px
 $mobile-break-point: 730px
+$background-color: #f9f9f9
 
 $full-width: 100%
 //$half-width: 50%
@@ -18,12 +19,14 @@ $full-width: 100%
   width: $full-width
 
 html
-  background-color: #f9f9f9
+  background-color: $background-color
+  height: auto
 
 body
   max-width: $max-app-width
   min-width: $min-app-width
   margin: 0 auto
+  position: relative
 
 .ui.header.app-header
   margin: 0.5rem 1rem
@@ -31,9 +34,9 @@ body
 .my-nav
   height: $max-nav-height
 
-.segment.my-side-bar, .pushable>.pusher
+.segment.my-side-bar
   margin-top: 0
-  min-height: calc(100vh - #{$max-nav-height})
+  min-height: 100vh
 
 .ui.segment, .ui.attached.inverted.menu
   border-radius: 0
@@ -80,11 +83,11 @@ body
   max-width: $max-feed-with
 
 .ui.segment
-  padding: 1.2em 4.5em
+  padding: 1.2em 4.5em 1.2em calc(#{$sidebar-with} + 4.5em)
   margin-top: 47px
 
 .ui.feed>.event
-  width: calc(100% - #{$sidebar-with})
+  width: 100%
 
 .ui.comments .comment
   position: relative
@@ -164,10 +167,6 @@ body
 .uppercase
   text-transform: uppercase
 
-.pushable>.pusher.dimmed:after
-  width: 0!important
-  height:0!important
-
 .ui.feed
   font-size: 1.14285714rem
 
@@ -177,6 +176,40 @@ body
 .ui.small.modal
   margin: 0 auto
   max-width: 520px
+
+.ui.visible.push.sidebar.vertical
+  left: 0
+  top: calc(#{$max-nav-height} + 1px)
+
+@media (min-width: 1201px)
+  .ui.attached.inverted.menu
+    padding-left: calc((100vw - #{$max-app-width}) / 2 )
+    padding-right: calc((100vw - #{$max-app-width}) / 2 )
+
+  body:before
+    width: calc((100vw - #{$max-app-width}) / 2 )
+    content: ""
+    height: $max-nav-height
+    background-color: $background-color
+    display: inline-block
+    position: fixed
+    top: 0
+    right: 0
+    z-index: 999
+
+  #root:before
+    width: calc((100vw - #{$max-app-width}) / 2 )
+    content: ""
+    height: $max-nav-height
+    background-color: $background-color
+    position: fixed
+    top: 0
+    left: 0
+    display: inline-block
+    z-index: 999
+
+  .ui.visible.push.sidebar.vertical
+    left: calc((100vw - #{$max-app-width}) / 2 )
 
 
 @media (max-width: $mobile-break-point)
@@ -188,10 +221,6 @@ body
 
   .ui.segment
     padding: 1.2em 1.5em
-
-  .pushable>.pusher.dimmed:after
-    width: 100% !important
-    height:100% !important
 
   .ui.feed
     font-size: 1rem
@@ -210,6 +239,37 @@ body
 
   .comment .voting
     left: -2.8rem
+
+  .ui.comments .add-comment
+    left: -2.8rem
+
+  .ui.dropdown .menu
+    left: auto
+    right: 0
+
+  .ui.top.overlay.sidebar
+    top: $max-nav-height !important
+    z-index: 1
+
+  .ui.basic.segment:after
+    position: fixed
+    bottom: 0
+    right: 0
+    content: ""
+    background-color: rgba(0,0,0,.4)
+    overflow: hidden
+    opacity: 0
+    transition: opacity .5s
+    will-change: opacity
+    z-index: -1
+    width: 0
+    height: 100%
+
+  .ui.basic.segment.dimmed:after
+    width: 100%
+    opacity: 1
+    z-index: 0
+
 
 @media (max-width: 531px)
   .ui.inverted.menu .item.search

@@ -39,8 +39,10 @@ class App extends Component {
   updateWindowDimensions() {
     const width = window.innerWidth;
     if (width < 731) {
+      if (this.state.sidebarDirection !== 'horizontal') this.setState({ sidebarDirection: 'horizontal' });
       if (this.state.toggleSideBar) this.setState({ toggleSideBar: false });
     } else {
+      if (this.state.sidebarDirection !== 'vertical') this.setState({ sidebarDirection: 'vertical' });
       if (!this.state.toggleSideBar) this.setState({ toggleSideBar: true });
     }
     //this.setState({ width: window.innerWidth, height: window.innerHeight });
@@ -62,17 +64,19 @@ class App extends Component {
 
   render() {
     const self = this;
+    const { sidebarDirection } = this.state;
+    console.log(sidebarDirection);
     return (
       <div>
         <Navigation onClick={this.onClick.bind(this)} />
-        <Sidebar.Pushable as={Segment} className="my-side-bar">
           <Sidebar
             as={Menu}
-            animation="push"
+            animation={sidebarDirection === 'horizontal' ? 'overlay' : 'push'}
             width="thin"
             visible={this.state.toggleSideBar}
             icon="labeled"
-            vertical
+            direction={sidebarDirection === 'horizontal' ? 'top' : 'left'}
+            vertical={sidebarDirection === 'vertical'}
             inverted
           >
             <Menu.Item name="home">
@@ -92,11 +96,7 @@ class App extends Component {
               Udacity
             </Menu.Item>
           </Sidebar>
-          <Sidebar.Pusher
-            className="post-content"
-            dimmed={this.state.toggleSideBar}
-          >
-            <Segment basic>
+            <Segment basic className={this.state.toggleSideBar ? ' dimmed' : ''}>
               <Header as="h3">Application Content</Header>
               <Feed>
                 <Feed.Event>
@@ -277,8 +277,6 @@ class App extends Component {
                 </Feed.Event>
               </Feed>
             </Segment>
-          </Sidebar.Pusher>
-        </Sidebar.Pushable>
         <Modal open={this.state.modalOpen} basic size="small" style={{marginTop: '30vh'}}>
           <Header icon="trash" content="Delete Comment" />
           <Modal.Content>

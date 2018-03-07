@@ -85,6 +85,7 @@ body
 .ui.segment
   padding: 1.2em 4.5em 1.2em calc(#{$sidebar-with} + 4.5em)
   margin-top: 47px
+  min-height: calc(100vh - #{$max-nav-height})
 
 .ui.feed>.event
   width: 100%
@@ -181,6 +182,40 @@ body
   left: 0
   top: calc(#{$max-nav-height} + 1px)
 
+.ui.inverted.dimmer>.ui.modal.view
+  margin: 0 auto !important
+  border-radius: 0
+  min-height: 478px
+
+.ui.inverted.dimmer
+  background-color: rgba(255,255,255,0.7)
+
+.fields:last-child
+  float: right
+
+.ui.modal>i.close
+    top: 1.0535rem
+    right: 1rem
+    color: rgba(0,0,0,.87)
+
+.ui.green.button.add-post
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2) !important
+  //transition: transform 0.2s ease 0s
+  position: fixed
+  top: calc(1.1rem + #{$max-nav-height})
+  right: 1.1rem
+  z-index: 998
+
+.ui.green.button.add-post:hover
+  //transform: translateY(-0.1rem)
+
+.ui.green.button.add-post i
+  transition: transform 0.2s ease-in 0s
+
+.ui.green.button.add-post:hover i
+  transform: rotate(90deg)
+
+
 @media (min-width: 1201px)
   .ui.attached.inverted.menu
     padding-left: calc((100vw - #{$max-app-width}) / 2 )
@@ -211,6 +246,9 @@ body
   .ui.visible.push.sidebar.vertical
     left: calc((100vw - #{$max-app-width}) / 2 )
 
+  .ui.green.button.add-post
+    right: calc(((100vw - #{$max-app-width}) / 2) + 1.1rem )
+
 
 @media (max-width: $mobile-break-point)
   .ui.top.attached.menu>.item:first-child.hamburger-link
@@ -220,7 +258,7 @@ body
     width: 100%
 
   .ui.segment
-    padding: 1.2em 1.5em
+    padding: 0.2em 1.5em 1.2em 1.5em
 
   .ui.feed
     font-size: 1rem
@@ -270,10 +308,21 @@ body
     opacity: 1
     z-index: 0
 
+  .ui.inverted.dimmer > .ui.modal.view
+    width: 100%
+
+  .ui.green.button.add-post
+    top: auto
+    bottom: 1.1rem
+    right: 1.1rem
+
 
 @media (max-width: 531px)
   .ui.inverted.menu .item.search
     display: none
+
+  .ui.inverted.dimmer > .ui.modal.view
+    height: 100%
 
 @media (max-width: 450px)
   .ui.comments .comment .metadata, .ui.feed>.event>.content .summary>.date

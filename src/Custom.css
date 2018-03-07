@@ -68,7 +68,8 @@ body {
 
 .ui.segment {
   padding: 1.2em 4.5em 1.2em calc(150px + 4.5em);
-  margin-top: 47px; }
+  margin-top: 47px;
+  min-height: calc(100vh - 47px); }
 
 .ui.feed > .event {
   width: 100%; }
@@ -164,6 +165,35 @@ body {
   left: 0;
   top: calc(47px + 1px); }
 
+.ui.inverted.dimmer > .ui.modal.view {
+  margin: 0 auto !important;
+  border-radius: 0;
+  min-height: 478px; }
+
+.ui.inverted.dimmer {
+  background-color: rgba(255, 255, 255, 0.7); }
+
+.fields:last-child {
+  float: right; }
+
+.ui.modal > i.close {
+  top: 1.0535rem;
+  right: 1rem;
+  color: rgba(0, 0, 0, 0.87); }
+
+.ui.green.button.add-post {
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2) !important;
+  position: fixed;
+  top: calc(1.1rem + 47px);
+  right: 1.1rem;
+  z-index: 998; }
+
+.ui.green.button.add-post i {
+  transition: transform 0.2s ease-in 0s; }
+
+.ui.green.button.add-post:hover i {
+  transform: rotate(90deg); }
+
 @media (min-width: 1201px) {
   .ui.attached.inverted.menu {
     padding-left: calc((100vw - 1200px) / 2);
@@ -189,7 +219,9 @@ body {
     display: inline-block;
     z-index: 999; }
   .ui.visible.push.sidebar.vertical {
-    left: calc((100vw - 1200px) / 2); } }
+    left: calc((100vw - 1200px) / 2); }
+  .ui.green.button.add-post {
+    right: calc(((100vw - 1200px) / 2) + 1.1rem); } }
 
 @media (max-width: 730px) {
   .ui.top.attached.menu > .item:first-child.hamburger-link {
@@ -197,7 +229,7 @@ body {
   .ui.feed > .event {
     width: 100%; }
   .ui.segment {
-    padding: 1.2em 1.5em; }
+    padding: 0.2em 1.5em 1.2em 1.5em; }
   .ui.feed {
     font-size: 1rem; }
   .ui.comments .comment .actions {
@@ -234,11 +266,19 @@ body {
   .ui.basic.segment.dimmed:after {
     width: 100%;
     opacity: 1;
-    z-index: 0; } }
+    z-index: 0; }
+  .ui.inverted.dimmer > .ui.modal.view {
+    width: 100%; }
+  .ui.green.button.add-post {
+    top: auto;
+    bottom: 1.1rem;
+    right: 1.1rem; } }
 
 @media (max-width: 531px) {
   .ui.inverted.menu .item.search {
-    display: none; } }
+    display: none; }
+  .ui.inverted.dimmer > .ui.modal.view {
+    height: 100%; } }
 
 @media (max-width: 450px) {
   .ui.comments .comment .metadata, .ui.feed > .event > .content .summary > .date {

@@ -30,7 +30,8 @@ class App extends Component {
       expandComments: true,
       toggleSideBar: true,
       modalOpen: false,
-      modalOpen2: false
+      modalOpen2: false,
+      showAddComment: false
     };
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
   }
@@ -91,9 +92,7 @@ class App extends Component {
           vertical={sidebarDirection === "vertical"}
           inverted
         >
-          <Menu.Item
-            name="home"
-          >
+          <Menu.Item name="home">
             <Icon name="home" />
             All
           </Menu.Item>
@@ -111,7 +110,14 @@ class App extends Component {
           </Menu.Item>
         </Sidebar>
         <Segment basic className={this.state.toggleSideBar ? " dimmed" : ""}>
-          <Button circular className="add-post"color='green' icon='pin' size="big" onClick={() => this.setState({ modalOpen2: true })}/>
+          <Button
+            circular
+            className="add-post"
+            color="green"
+            icon="pin"
+            size="big"
+            onClick={() => this.setState({ modalOpen2: true })}
+          />
           <Header as="h3">Application Content</Header>
           <Feed>
             <Feed.Event>
@@ -153,9 +159,38 @@ class App extends Component {
                 </Feed.Extra>
 
                 <Comment.Group>
-                  <a className="add-comment">
+                  <a
+                    className="add-comment"
+                    onClick={() =>
+                      this.setState({
+                        showAddComment: !this.state.showAddComment
+                      })
+                    }
+                  >
                     <Icon name="comment outline" /> Comment
                   </a>
+                  <Form
+                    loading={false}
+                    className={
+                      this.state.showAddComment ? " is-visible" : " is-hidden"
+                    }
+                    reply
+                  >
+                    <Form.Input
+                      fluid
+                      placeholder="Name"
+                      onChange={event => console.log(event.target.value)}
+                      required
+                    />
+
+                    <Form.TextArea
+                      placeholder="Tell us what you think..."
+                      required
+                    />
+                    <Form.Button color="green" size="tiny" loading={false}>
+                      <Icon name="comment outline" />Add Comment
+                    </Form.Button>
+                  </Form>
                   <Header as="h4" dividing>
                     4 Comments{" "}
                     <a
@@ -169,7 +204,6 @@ class App extends Component {
                       ...more
                     </a>
                   </Header>
-
                   <Comment>
                     <div className="voting">
                       <Icon name="triangle up" />
@@ -359,9 +393,18 @@ class App extends Component {
         >
           <Modal.Header icon="pin">Add Post</Modal.Header>
           <Modal.Content scrolling={false}>
-            <Form onSubmit={(event) => console.log('hereee', event.target.value)} loading={false}>
+            <Form
+              onSubmit={event => console.log("hereee", event.target.value)}
+              loading={false}
+            >
               <Form.Group widths="equal">
-                <Form.Input fluid label="Name" placeholder="Name" onChange={(event) => console.log( event.target.value)} required />
+                <Form.Input
+                  fluid
+                  label="Name"
+                  placeholder="Name"
+                  onChange={event => console.log(event.target.value)}
+                  required
+                />
                 <Form.Select
                   fluid
                   label="Category"
@@ -378,8 +421,12 @@ class App extends Component {
                 required
               />
               <Form.Group>
-              <Button basic color='gray'>Cancel</Button>
-              <Form.Button basic color='green'><Icon name='pin' />Create</Form.Button>
+                <Button basic color="grey">
+                  Cancel
+                </Button>
+                <Form.Button basic color="green">
+                  <Icon name="pin" />Create
+                </Form.Button>
               </Form.Group>
             </Form>
           </Modal.Content>

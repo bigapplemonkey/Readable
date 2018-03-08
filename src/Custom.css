@@ -194,6 +194,18 @@ body {
 .ui.green.button.add-post:hover i {
   transform: rotate(90deg); }
 
+.ui.comments .reply.form textarea {
+  height: 5em; }
+
+.ui.form .field:last-child {
+  text-align: right; }
+
+.is-visible {
+  display: block; }
+
+.is-hidden {
+  display: none; }
+
 @media (min-width: 1201px) {
   .ui.attached.inverted.menu {
     padding-left: calc((100vw - 1200px) / 2);
@@ -272,13 +284,21 @@ body {
   .ui.green.button.add-post {
     top: auto;
     bottom: 1.1rem;
-    right: 1.1rem; } }
+    right: 1.1rem; }
+  .segment .ui.header {
+    margin-top: 1.1rem; }
+  .ui.tiny.button {
+    font-size: .78571429rem; } }
 
 @media (max-width: 531px) {
   .ui.inverted.menu .item.search {
     display: none; }
   .ui.inverted.dimmer > .ui.modal.view {
-    height: 100%; } }
+    height: 100%; }
+  .ui.inverted.dimmer {
+    padding: 0; }
+  .ui.reply.form {
+    font-size: .85714286rem; } }
 
 @media (max-width: 450px) {
   .ui.comments .comment .metadata, .ui.feed > .event > .content .summary > .date {

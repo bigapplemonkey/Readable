@@ -1,9 +1,10 @@
-import React, { Component } from "react";
-import "./App.css";
-import "./semantic/dist/semantic.min.css";
-import "./Custom.css";
+import React, { Component } from 'react';
+import './App.css';
+import './semantic/dist/semantic.min.css';
+import './Custom.css';
 // Components
-import Navigation from "./Navigation";
+import Navigation from './Navigation';
+import Vote from './Vote';
 import {
   Sidebar,
   Segment,
@@ -16,12 +17,12 @@ import {
   Button,
   Form,
   Transition
-} from "semantic-ui-react";
+} from 'semantic-ui-react';
 
 const options = [
-  { key: "react", text: "React", value: "react" },
-  { key: "redux", text: "Redux", value: "redux" },
-  { key: "udacity", text: "Udacity", value: "udacity" }
+  { key: 'react', text: 'React', value: 'react' },
+  { key: 'redux', text: 'Redux', value: 'redux' },
+  { key: 'udacity', text: 'Udacity', value: 'udacity' }
 ];
 
 class App extends Component {
@@ -40,33 +41,33 @@ class App extends Component {
   componentDidMount() {
     console.log('here!');
     this.updateWindowDimensions();
-    window.addEventListener("resize", this.updateWindowDimensions);
+    window.addEventListener('resize', this.updateWindowDimensions);
     this.setState({ isAppReady: true });
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", this.updateWindowDimensions);
+    window.removeEventListener('resize', this.updateWindowDimensions);
   }
 
   updateWindowDimensions() {
     const width = window.innerWidth;
     if (width < 731) {
-      if (this.state.sidebarDirection !== "horizontal")
-        this.setState({ sidebarDirection: "horizontal" });
+      if (this.state.sidebarDirection !== 'horizontal')
+        this.setState({ sidebarDirection: 'horizontal' });
       if (this.state.toggleSideBar) this.setState({ toggleSideBar: false });
     } else {
-      if (this.state.sidebarDirection !== "vertical")
-        this.setState({ sidebarDirection: "vertical" });
+      if (this.state.sidebarDirection !== 'vertical')
+        this.setState({ sidebarDirection: 'vertical' });
       if (!this.state.toggleSideBar) this.setState({ toggleSideBar: true });
     }
     //this.setState({ width: window.innerWidth, height: window.innerHeight });
   }
 
   getRandomPhoto(size) {
-    let animals = ["cat", "dog", "monkey", "ape", "squirrel", "beaver"];
+    let animals = ['cat', 'dog', 'monkey', 'ape', 'squirrel', 'beaver'];
     const randAnimal = animals[Math.floor(Math.random() * animals.length)];
     return `https://api.adorable.io/avatars/${
-      size ? size : "35"
+      size ? size : '35'
     }/${randAnimal}.png`;
   }
 
@@ -87,12 +88,12 @@ class App extends Component {
         <Navigation onClick={this.onClick.bind(this)} />
         <Sidebar
           as={Menu}
-          animation={sidebarDirection === "horizontal" ? "overlay" : "push"}
+          animation={sidebarDirection === 'horizontal' ? 'overlay' : 'push'}
           width="thin"
           visible={this.state.toggleSideBar}
           icon="labeled"
-          direction={sidebarDirection === "horizontal" ? "top" : "left"}
-          vertical={sidebarDirection === "vertical"}
+          direction={sidebarDirection === 'horizontal' ? 'top' : 'left'}
+          vertical={sidebarDirection === 'vertical'}
           inverted
         >
           <Menu.Item name="home">
@@ -112,7 +113,7 @@ class App extends Component {
             Udacity
           </Menu.Item>
         </Sidebar>
-        <Segment basic className={this.state.toggleSideBar ? " dimmed" : ""}>
+        <Segment basic className={this.state.toggleSideBar ? ' dimmed' : ''}>
           <Button
             circular
             className="add-post"
@@ -136,13 +137,7 @@ class App extends Component {
                 children={
                   <div>
                     <img alt="" src={self.getRandomPhoto()} />
-                    <div className="voting">
-                      <Icon name="triangle up" />
-                      <div className="count">
-                        <Icon name="thumbs up" />2
-                      </div>
-                      <Icon name="triangle down" />
-                    </div>
+                    <Vote count={5} />
                   </div>
                 }
               />
@@ -174,9 +169,7 @@ class App extends Component {
                   </a>
                   <Form
                     loading={false}
-                    className={
-                      this.state.showAddComment ? " is-visible" : ""
-                    }
+                    className={this.state.showAddComment ? ' is-visible' : ''}
                     reply
                   >
                     <Form.Input
@@ -195,7 +188,7 @@ class App extends Component {
                     </Form.Button>
                   </Form>
                   <Header as="h4" dividing>
-                    4 Comments{" "}
+                    4 Comments{' '}
                     <a
                       className="more"
                       onClick={() =>
@@ -208,13 +201,7 @@ class App extends Component {
                     </a>
                   </Header>
                   <Comment>
-                    <div className="voting">
-                      <Icon name="triangle up" />
-                      <div className="count">
-                        <Icon name="thumbs up" />2
-                      </div>
-                      <Icon name="triangle down" />
-                    </div>
+                    <Vote count={2} />
                     <Comment.Avatar src={this.getRandomPhoto()} />
                     <Comment.Content>
                       <Comment.Author as="a">Matt</Comment.Author>
@@ -236,102 +223,106 @@ class App extends Component {
                     </Comment.Content>
                   </Comment>
 
-                  <div className={`more-comments${this.state.expandComments ? ' is-visible' : ''}`}>
-                  <Comment >
-                    <div className="voting">
-                      <Icon name="triangle up" />
-                      <div className="count">
-                        <Icon name="thumbs up" />2
+                  <div
+                    className={`more-comments${
+                      this.state.expandComments ? ' is-visible' : ''
+                    }`}
+                  >
+                    <Comment>
+                      <div className="voting">
+                        <Icon name="triangle up" />
+                        <div className="count">
+                          <Icon name="thumbs up" />2
+                        </div>
+                        <Icon name="triangle down" />
                       </div>
-                      <Icon name="triangle down" />
-                    </div>
-                    <Comment.Avatar src={this.getRandomPhoto()} />
-                    <Comment.Content>
-                      <Comment.Author as="a">Matt</Comment.Author>
-                      <Comment.Metadata>
-                        <div>Today at 5:42PM</div>
-                      </Comment.Metadata>
-                      <Comment.Text>How artistic!</Comment.Text>
-                      <Comment.Actions>
-                        <Comment.Action children={<Icon name="edit" />} />
-                        <Comment.Action
-                          children={
-                            <Icon
-                              name="delete"
-                              onClick={this.toggleModal.bind(this)}
-                            />
-                          }
-                        />
-                      </Comment.Actions>
-                    </Comment.Content>
-                  </Comment>
+                      <Comment.Avatar src={this.getRandomPhoto()} />
+                      <Comment.Content>
+                        <Comment.Author as="a">Matt</Comment.Author>
+                        <Comment.Metadata>
+                          <div>Today at 5:42PM</div>
+                        </Comment.Metadata>
+                        <Comment.Text>How artistic!</Comment.Text>
+                        <Comment.Actions>
+                          <Comment.Action children={<Icon name="edit" />} />
+                          <Comment.Action
+                            children={
+                              <Icon
+                                name="delete"
+                                onClick={this.toggleModal.bind(this)}
+                              />
+                            }
+                          />
+                        </Comment.Actions>
+                      </Comment.Content>
+                    </Comment>
 
-                  <Comment >
-                    <div className="voting">
-                      <Icon name="triangle up" />
-                      <div className="count">
-                        <Icon name="thumbs up" />2
+                    <Comment>
+                      <div className="voting">
+                        <Icon name="triangle up" />
+                        <div className="count">
+                          <Icon name="thumbs up" />2
+                        </div>
+                        <Icon name="triangle down" />
                       </div>
-                      <Icon name="triangle down" />
-                    </div>
-                    <Comment.Avatar src={this.getRandomPhoto()} />
-                    <Comment.Content>
-                      <Comment.Author as="a">Elliot Fu</Comment.Author>
-                      <Comment.Metadata>
-                        <div>Yesterday at 12:30AM</div>
-                      </Comment.Metadata>
-                      <Comment.Text>
-                        <p>
-                          This has been very useful for my research. Thanks as
-                          well! This has been very useful for my research.
-                          Thanks as well! This has been very useful for my
-                          research. Thanks as well!
-                        </p>
-                      </Comment.Text>
-                      <Comment.Actions>
-                        <Comment.Action children={<Icon name="edit" />} />
-                        <Comment.Action
-                          children={
-                            <Icon
-                              name="delete"
-                              onClick={this.toggleModal.bind(this)}
-                            />
-                          }
-                        />
-                      </Comment.Actions>
-                    </Comment.Content>
-                  </Comment>
+                      <Comment.Avatar src={this.getRandomPhoto()} />
+                      <Comment.Content>
+                        <Comment.Author as="a">Elliot Fu</Comment.Author>
+                        <Comment.Metadata>
+                          <div>Yesterday at 12:30AM</div>
+                        </Comment.Metadata>
+                        <Comment.Text>
+                          <p>
+                            This has been very useful for my research. Thanks as
+                            well! This has been very useful for my research.
+                            Thanks as well! This has been very useful for my
+                            research. Thanks as well!
+                          </p>
+                        </Comment.Text>
+                        <Comment.Actions>
+                          <Comment.Action children={<Icon name="edit" />} />
+                          <Comment.Action
+                            children={
+                              <Icon
+                                name="delete"
+                                onClick={this.toggleModal.bind(this)}
+                              />
+                            }
+                          />
+                        </Comment.Actions>
+                      </Comment.Content>
+                    </Comment>
 
-                  <Comment >
-                    <div className="voting">
-                      <Icon name="triangle up" />
-                      <div className="count">
-                        <Icon name="thumbs up" />2
+                    <Comment>
+                      <div className="voting">
+                        <Icon name="triangle up" />
+                        <div className="count">
+                          <Icon name="thumbs up" />2
+                        </div>
+                        <Icon name="triangle down" />
                       </div>
-                      <Icon name="triangle down" />
-                    </div>
-                    <Comment.Avatar src={this.getRandomPhoto()} />
-                    <Comment.Content>
-                      <Comment.Author as="a">Joe Henderson</Comment.Author>
-                      <Comment.Metadata>
-                        <div>5 days ago</div>
-                      </Comment.Metadata>
-                      <Comment.Text>
-                        Dude, this is awesome. Thanks so much
-                      </Comment.Text>
-                      <Comment.Actions>
-                        <Comment.Action children={<Icon name="edit" />} />
-                        <Comment.Action
-                          children={
-                            <Icon
-                              name="delete"
-                              onClick={this.toggleModal.bind(this)}
-                            />
-                          }
-                        />
-                      </Comment.Actions>
-                    </Comment.Content>
-                  </Comment>
+                      <Comment.Avatar src={this.getRandomPhoto()} />
+                      <Comment.Content>
+                        <Comment.Author as="a">Joe Henderson</Comment.Author>
+                        <Comment.Metadata>
+                          <div>5 days ago</div>
+                        </Comment.Metadata>
+                        <Comment.Text>
+                          Dude, this is awesome. Thanks so much
+                        </Comment.Text>
+                        <Comment.Actions>
+                          <Comment.Action children={<Icon name="edit" />} />
+                          <Comment.Action
+                            children={
+                              <Icon
+                                name="delete"
+                                onClick={this.toggleModal.bind(this)}
+                              />
+                            }
+                          />
+                        </Comment.Actions>
+                      </Comment.Content>
+                    </Comment>
                   </div>
                 </Comment.Group>
               </Feed.Content>
@@ -359,90 +350,92 @@ class App extends Component {
             </Feed.Event>
           </Feed>
         </Segment>
-        <Transition visible={this.state.modalOpen} animation='fade down' unmountOnHide={true} duration={350}>
-
-        <Modal
-          open={true}
-          basic
-          size="small"
-          style={{ marginTop: "30vh" }}
+        <Transition
+          visible={this.state.modalOpen}
+          animation="fade down"
+          unmountOnHide={true}
+          duration={350}
         >
-          <Header icon="trash" content="Delete Comment" />
-          <Modal.Content>
-            <p>Are you sure you want to delete this comment?</p>
-          </Modal.Content>
-          <Modal.Actions>
-            <Button
-              basic
-              color="red"
-              onClick={this.toggleModal.bind(this)}
-              inverted
-            >
-              <Icon name="remove" /> No
-            </Button>
-            <Button
-              color="green"
-              onClick={this.toggleModal.bind(this)}
-              inverted
-            >
-              <Icon name="checkmark" /> Yes
-            </Button>
-          </Modal.Actions>
-        </Modal>
-
-
-
+          <Modal open={true} basic size="small" style={{ marginTop: '30vh' }}>
+            <Header icon="trash" content="Delete Comment" />
+            <Modal.Content>
+              <p>Are you sure you want to delete this comment?</p>
+            </Modal.Content>
+            <Modal.Actions>
+              <Button
+                basic
+                color="red"
+                onClick={this.toggleModal.bind(this)}
+                inverted
+              >
+                <Icon name="remove" /> No
+              </Button>
+              <Button
+                color="green"
+                onClick={this.toggleModal.bind(this)}
+                inverted
+              >
+                <Icon name="checkmark" /> Yes
+              </Button>
+            </Modal.Actions>
+          </Modal>
         </Transition>
 
-<Transition visible={this.state.modalOpen2} animation='fade down' unmountOnHide={true} duration={350}>
-        <Modal
-          className="view"
-          dimmer="inverted"
-          open={true}
-          onClose={() => this.setState({ modalOpen2: false })}
-          closeOnDimmerClick={false}
-          closeIcon={true}
+        <Transition
+          visible={this.state.modalOpen2}
+          animation="fade down"
+          unmountOnHide={true}
+          duration={350}
         >
-          <Modal.Header icon="pin">Add Post</Modal.Header>
-          <Modal.Content scrolling={false}>
-            <Form
-              onSubmit={event => console.log("hereee", event.target.value)}
-              loading={false}
-            >
-              <Form.Group widths="equal">
-                <Form.Input
-                  fluid
-                  label="Name"
-                  placeholder="Name"
-                  onChange={event => console.log(event.target.value)}
+          <Modal
+            className="view"
+            dimmer="inverted"
+            open={true}
+            onClose={() => this.setState({ modalOpen2: false })}
+            closeOnDimmerClick={false}
+            closeIcon={true}
+          >
+            <Modal.Header icon="pin">Add Post</Modal.Header>
+            <Modal.Content scrolling={false}>
+              <Form
+                onSubmit={event => console.log('hereee', event.target.value)}
+                loading={false}
+              >
+                <Form.Group widths="equal">
+                  <Form.Input
+                    fluid
+                    label="Name"
+                    placeholder="Name"
+                    onChange={event => console.log(event.target.value)}
+                    required
+                  />
+                  <Form.Select
+                    fluid
+                    label="Category"
+                    options={options}
+                    placeholder="Category"
+                    required
+                  />
+                </Form.Group>
+                <Form.Input fluid label="Title" placeholder="Title" required />
+                <Form.TextArea
+                  label="Content"
+                  placeholder="Tell us more about it..."
+                  rows="5"
                   required
                 />
-                <Form.Select
-                  fluid
-                  label="Category"
-                  options={options}
-                  placeholder="Category"
-                  required
-                />
-              </Form.Group>
-              <Form.Input fluid label="Title" placeholder="Title" required />
-              <Form.TextArea
-                label="Content"
-                placeholder="Tell us more about it..."
-                rows="5"
-                required
-              />
-              <Form.Group>
-                <Button basic color="grey">
-                  Cancel
-                </Button>
-                <Form.Button basic color="green">
-                  <Icon name="pin" />Create
-                </Form.Button>
-              </Form.Group>
-            </Form>
-          </Modal.Content>
-        </Modal></Transition>
+                <Form.Group>
+                  <Button basic color="grey">
+                    Cancel
+                  </Button>
+                  <Form.Button basic color="green">
+                    <Icon name="pin" />Create
+                  </Form.Button>
+                </Form.Group>
+              </Form>
+            </Modal.Content>
+          </Modal>
+        </Transition>
       </div>
     );
   }

@@ -1,9 +1,9 @@
-import React, { Component } from "react";
-import { Dropdown, Icon, Menu, Header, Input } from "semantic-ui-react";
+import React, { Component } from 'react';
+import { Dropdown, Icon, Menu, Header, Input } from 'semantic-ui-react';
 
 class Navigation extends Component {
   state = {
-    activeItem: "gamepad"
+    activeItem: 'gamepad'
   };
 
   render() {
@@ -47,7 +47,7 @@ class Navigation extends Component {
             </Dropdown>
             <div className="ui right aligned category search item">
               <Input
-                icon={{ name: "search", circular: true, link: true }}
+                icon={{ name: 'search', circular: true, link: true }}
                 placeholder="Search..."
               />
               <div className="results" />

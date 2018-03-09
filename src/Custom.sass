@@ -5,6 +5,7 @@ $max-feed-with: 800px
 $sidebar-with: 150px
 $mobile-break-point: 730px
 $background-color: #f9f9f9
+$show-animation-timing: 0.6s
 
 $full-width: 100%
 //$half-width: 50%
@@ -221,12 +222,13 @@ body
 .ui.form .field:last-child
   text-align: right
 
-.is-visible
-  display: block
+.ui.comments>.reply.form, .more-comments
+  max-height: 0
+  overflow: hidden
+  transition: $show-animation-timing max-height linear
 
-.is-hidden
-  display: none
-
+.ui.comments>.reply.form.is-visible, .more-comments.is-visible
+  max-height: 100vh
 
 @media (min-width: 1201px)
   .ui.attached.inverted.menu

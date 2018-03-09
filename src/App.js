@@ -14,7 +14,8 @@ import {
   Comment,
   Modal,
   Button,
-  Form
+  Form,
+  Transition
 } from "semantic-ui-react";
 
 const options = [
@@ -27,7 +28,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      expandComments: true,
+      expandComments: false,
       toggleSideBar: true,
       modalOpen: false,
       modalOpen2: false,
@@ -37,8 +38,10 @@ class App extends Component {
   }
 
   componentDidMount() {
+    console.log('here!');
     this.updateWindowDimensions();
     window.addEventListener("resize", this.updateWindowDimensions);
+    this.setState({ isAppReady: true });
   }
 
   componentWillUnmount() {
@@ -172,7 +175,7 @@ class App extends Component {
                   <Form
                     loading={false}
                     className={
-                      this.state.showAddComment ? " is-visible" : " is-hidden"
+                      this.state.showAddComment ? " is-visible" : ""
                     }
                     reply
                   >
@@ -233,7 +236,8 @@ class App extends Component {
                     </Comment.Content>
                   </Comment>
 
-                  <Comment collapsed={this.state.expandComments}>
+                  <div className={`more-comments${this.state.expandComments ? ' is-visible' : ''}`}>
+                  <Comment >
                     <div className="voting">
                       <Icon name="triangle up" />
                       <div className="count">
@@ -262,7 +266,7 @@ class App extends Component {
                     </Comment.Content>
                   </Comment>
 
-                  <Comment collapsed={this.state.expandComments}>
+                  <Comment >
                     <div className="voting">
                       <Icon name="triangle up" />
                       <div className="count">
@@ -298,7 +302,7 @@ class App extends Component {
                     </Comment.Content>
                   </Comment>
 
-                  <Comment collapsed={this.state.expandComments}>
+                  <Comment >
                     <div className="voting">
                       <Icon name="triangle up" />
                       <div className="count">
@@ -328,6 +332,7 @@ class App extends Component {
                       </Comment.Actions>
                     </Comment.Content>
                   </Comment>
+                  </div>
                 </Comment.Group>
               </Feed.Content>
             </Feed.Event>
@@ -354,8 +359,10 @@ class App extends Component {
             </Feed.Event>
           </Feed>
         </Segment>
+        <Transition visible={this.state.modalOpen} animation='fade down' unmountOnHide={true} duration={350}>
+
         <Modal
-          open={this.state.modalOpen}
+          open={true}
           basic
           size="small"
           style={{ marginTop: "30vh" }}
@@ -383,10 +390,15 @@ class App extends Component {
           </Modal.Actions>
         </Modal>
 
+
+
+        </Transition>
+
+<Transition visible={this.state.modalOpen2} animation='fade down' unmountOnHide={true} duration={350}>
         <Modal
           className="view"
           dimmer="inverted"
-          open={this.state.modalOpen2}
+          open={true}
           onClose={() => this.setState({ modalOpen2: false })}
           closeOnDimmerClick={false}
           closeIcon={true}
@@ -430,7 +442,7 @@ class App extends Component {
               </Form.Group>
             </Form>
           </Modal.Content>
-        </Modal>
+        </Modal></Transition>
       </div>
     );
   }

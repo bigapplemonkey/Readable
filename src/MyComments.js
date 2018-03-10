@@ -6,7 +6,17 @@ import MyComment from './MyComment';
 import { Comment, Form, Icon, Header } from 'semantic-ui-react';
 
 class MyComments extends Component {
-  state = { visible: true, showAddComment: false, expandComments: false };
+  constructor(props) {
+    super(props);
+    this.state = {
+      visible: true,
+      showForm: false,
+      showComments: false,
+      poster: '',
+      body: ''
+    };
+    this.toggle = this.toggle.bind(this);
+  }
 
   comments = [
     {
@@ -32,53 +42,63 @@ class MyComments extends Component {
     }
   ];
 
+  toggle(attribute) {
+    this.setState({ [attribute]: !this.state[attribute] });
+  }
+
+  handleChange(event, attribute) {
+    this.setState({ [attribute]: event.target.value });
+  }
+
   render() {
     const self = this;
 
     const comments = self.comments;
+    const { poster, body } = self.state;
+
+    const isEnabled = poster.length > 0 && body.length > 0;
+
+    // Dynamic classes
+    const showCommentForm = self.state.showForm ? ' is-visible' : '';
+    const showMoreComments = self.state.showComments ? ' is-visible' : '';
+
+    // Commnet message
+    const commentMessage = `${
+      comments.length > 0 ? comments.length : 'No '
+    } Comment${comments.length === 1 ? '' : 's'}`;
 
     return (
       <Comment.Group>
-        <a
-          className="add-comment"
-          onClick={() =>
-            self.setState({
-              showAddComment: !self.state.showAddComment
-            })
-          }
-        >
+        <a className="add-comment" onClick={() => self.toggle('showForm')}>
           <Icon name="comment outline" /> Comment
         </a>
-        <Form
-          loading={false}
-          className={this.state.showAddComment ? ' is-visible' : ''}
-          reply
-        >
+        <Form loading={false} className={showCommentForm} reply>
           <Form.Input
             fluid
             placeholder="Name"
-            onChange={event => console.log(event.target.value)}
+            value={self.state.poster}
+            onChange={event => self.handleChange(event, 'poster')}
             required
           />
-          <Form.TextArea placeholder="Tell us what you think..." required />
-          <Form.Button color="green" size="tiny" loading={false}>
+          <Form.TextArea
+            placeholder="Tell us what you think..."
+            value={self.state.body}
+            onChange={event => self.handleChange(event, 'body')}
+            required
+          />
+          <Form.Button
+            color="green"
+            size="tiny"
+            loading={false}
+            disabled={!isEnabled}
+          >
             <Icon name="comment outline" />Add Comment
           </Form.Button>
         </Form>
         <Header as="h4" dividing>
-          {comments.length > 0 ? comments.length : 'No '} Comment{comments.length ===
-          1
-            ? ''
-            : 's'}
+          {commentMessage}
           {comments.length > 1 && (
-            <a
-              className="more"
-              onClick={() =>
-                this.setState({
-                  expandComments: !self.state.expandComments
-                })
-              }
-            >
+            <a className="more" onClick={() => self.toggle('showComments')}>
               ...more
             </a>
           )}
@@ -91,11 +111,7 @@ class MyComments extends Component {
           />
         )}
         {comments.length > 1 && (
-          <div
-            className={`more-comments${
-              self.state.expandComments ? ' is-visible' : ''
-            }`}
-          >
+          <div className={`more-comments${showMoreComments}`}>
             {comments
               .slice(1)
               .map(comment => (

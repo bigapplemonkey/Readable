@@ -26,6 +26,10 @@ body {
   position: relative;
 }
 
+.ui.attached.inverted.menu {
+  min-width: 340px;
+}
+
 .ui.header.app-header {
   margin: 0.5rem 1rem;
 }

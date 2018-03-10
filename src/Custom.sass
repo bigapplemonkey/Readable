@@ -44,13 +44,14 @@ body
 
 .voting
   @extend %flex-container
-  width: $full-width
 
 .ui.feed>.event>.label .icon, .voting .count, .comment .voting .icon
   @extend %flex-container
   @extend %full-flex-item
   color: rgba(0,0,0,.5)
   transition: .2s all ease
+  text-align: center
+  margin: 0 auto;
 
 .ui.feed>.event>.label .icon.thumbs
   font-size: 1.2rem
@@ -60,7 +61,7 @@ body
 .comment .voting .icon.thumbs
   font-size: 1.1rem
   margin-right: 0.1rem
-  width: 50%
+  width: 43%
 
 .comment .voting .icon
   font-size: 1.3rem
@@ -93,21 +94,25 @@ body
 
 .ui.comments .comment
   position: relative
+  margin-left: 45px
+  margin-bottom: 1.7rem
+
+.ui.comments .comment:first-child
+  padding-top: 0.2rem
 
 .comment .voting
   position: absolute
-  left: -3rem
+  left: -3.2rem
   top: 0
   width: 40px
 
-.ui.comments .comment
-  margin-left: 45px
+.ui.comments .comment>.content
+  position: relative
 
 .ui.comments .comment .actions
   position: absolute
-  top: 0
+  top: -0.2rem
   right: 0
-  padding: 0.5em 0 0
 
 .actions i.icon
   font-size: 1.1em
@@ -115,9 +120,6 @@ body
 
 .ui.comments .comment .actions a
   margin: 0 0.6em 0 0
-
-.ui.comments .comment
-  margin-bottom: 1.7rem
 
 .ui.comments .comment .actions a:hover .delete, .ui.comments .comment:hover .actions a .delete, .feed-actions a:hover .delete
   color: #ff2733
@@ -225,10 +227,14 @@ body
 .ui.comments>.reply.form, .more-comments
   max-height: 0
   overflow: hidden
-  transition: $show-animation-timing max-height linear
+  will-change: max-height
+  transition: max-height $show-animation-timing linear
 
 .ui.comments>.reply.form.is-visible, .more-comments.is-visible
   max-height: 100vh
+
+.ui.dividing.header
+  margin-top: 0.7rem
 
 @media (min-width: 1201px)
   .ui.attached.inverted.menu
@@ -287,10 +293,8 @@ body
     margin-left: 3.2em
 
   .ui.comments .comment
-    margin-left: 38px
+    margin-left: 44px
 
-  .comment .voting
-    left: -2.8rem
 
   .ui.comments .add-comment
     left: -2.8rem
@@ -336,6 +340,12 @@ body
   .ui.tiny.button
     font-size: .78571429rem
 
+  .ui.dividing.header
+    margin-top: 0.5rem
+
+  .ui.comments .comment .actions
+    top: -0.1rem
+
 
 @media (max-width: 531px)
   .ui.inverted.menu .item.search
@@ -350,7 +360,7 @@ body
   .ui.reply.form
     font-size: .85714286rem
 
-@media (max-width: 450px)
+@media (max-width: 470px)
   .ui.comments .comment .metadata, .ui.feed>.event>.content .summary>.date
     margin-left: 0
     width: 100%

@@ -8,6 +8,7 @@ class Vote extends Component {
   state = { visible: true };
 
   updateCount(isIncrement) {
+    this.props.handleVote(isIncrement);
     this.setState({ visible: !this.state.visible });
   }
 
@@ -21,9 +22,11 @@ class Vote extends Component {
         <Icon name="triangle up" onClick={() => self.updateCount(true)} />
         <div className="count">
           <Transition animation="jiggle" duration={500} visible={visible}>
-            <Icon name="thumbs up" />
+            <div>
+              <Icon name="thumbs up" />
+              {self.props.count}
+            </div>
           </Transition>
-          {self.props.count}
         </div>
         <Icon name="triangle down" onClick={() => self.updateCount(false)} />
       </div>
@@ -32,7 +35,8 @@ class Vote extends Component {
 }
 
 Vote.propTypes = {
-  count: PropTypes.number
+  count: PropTypes.number.isRequired,
+  handleVote: PropTypes.func.isRequired
 };
 
 export default Vote;

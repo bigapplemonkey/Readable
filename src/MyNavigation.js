@@ -3,7 +3,6 @@ import { Dropdown, Icon, Menu, Header, Input } from 'semantic-ui-react';
 
 class MyNavigation extends Component {
   state = {
-    isHamburgerActive: false,
     activeItem: 'date'
   };
 
@@ -20,12 +19,11 @@ class MyNavigation extends Component {
   };
 
   toggleHamburger() {
-    this.setState({ isHamburgerActive: !this.state.isHamburgerActive });
     this.props.onHamburgerClick();
   }
 
   updateActiveItem(activeItem) {
-    this.setState({ activeItem: activeItem.key, isHamburgerActive: false });
+    this.setState({ activeItem: activeItem.key });
     this.props.onSort(activeItem);
   }
 
@@ -39,7 +37,6 @@ class MyNavigation extends Component {
           <Menu.Item
             name="hamburger"
             className="hamburger-link"
-            active={self.state.isHamburgerActive}
             onClick={self.toggleHamburger.bind(this)}
           >
             <Icon name="sidebar" />

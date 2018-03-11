@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 // Components
-import { Feed, Icon } from 'semantic-ui-react';
+import { Feed, Icon, Dimmer, Loader } from 'semantic-ui-react';
 import MyComments from './MyComments';
 import Vote from './Vote';
 
@@ -18,6 +18,9 @@ class MyPost extends Component {
 
     return (
       <Feed.Event>
+        <Dimmer active={false} inverted>
+          <Loader />
+        </Dimmer>
         <div className="feed-actions">
           <a onClick={() => self.props.handlePostAction('edit', post)}>
             <Icon name="edit" />

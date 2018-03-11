@@ -6,14 +6,14 @@ import './Custom.css';
 import MyNavigation from './MyNavigation';
 import MySidebar from './MySidebar';
 import MyPost from './MyPost';
+import MyConfirmationModal from './MyConfirmationModal';
+import MyEditModal from './MyEditModal';
 import {
   Segment,
   Icon,
   Header,
   Feed,
-  Modal,
   Button,
-  Form,
   Transition
 } from 'semantic-ui-react';
 
@@ -28,16 +28,17 @@ const posts = [
   {
     poster: 'Peter Jhon',
     date: 'Yesterday at 12:30AM',
-    body: `Ours is a life of constant reruns. We're always circling
-            back to where we'd we started, then starting all over again.
-            Even if we don't run extra laps that day, we surely will
-            come back for more of the same another day soon.`,
+    title: 'This is my title 1',
+    body: `Ours is a life of constant reruns. We're always circling back to where we'd we started, then starting all over again. Even if we don't run extra laps that day, we surely will come back for more of the same another day soon.`,
+    category: 'redux',
     count: -25
   },
   {
     poster: 'Kim Fu',
     date: '5 days ago',
+    title: 'This is my title 2',
     body: `Strength does not come from winning. Your struggles develop your strengths. When you go through hardships and decide not to surrender, that is strength.`,
+    category: 'udacity',
     count: 9
   }
 ];
@@ -49,7 +50,10 @@ class App extends Component {
       isAppReady: false,
       toggleSideBar: false,
       modalOpen: false,
+      modalType: '',
       modalOpen2: false,
+      item: {},
+      isEdit: false,
       sortBy: { key: 'date', value: 'Date', icon: 'sort content ascending' },
       category: { key: 'all', value: 'All', icon: 'home' }
     };
@@ -73,6 +77,20 @@ class App extends Component {
 
   toggleModal() {
     this.setState({ modalOpen: !this.state.modalOpen });
+  }
+
+  openModal(action, item) {
+    console.log(action);
+    console.log(item);
+    if (action === 'delete')
+      this.setState({ modalOpen: true, modalType: 'post' });
+    else if (action === 'edit')
+      this.setState({ modalOpen2: true, item: item, isEdit: true });
+  }
+
+  closeConfirmationModal(toDelete) {
+    this.setState({ modalOpen: false, modalType: '' });
+    console.log(toDelete);
   }
 
   updateState(attribute, value) {
@@ -109,7 +127,7 @@ class App extends Component {
               color="green"
               icon="pin"
               size="big"
-              onClick={() => self.setState({ modalOpen2: true })}
+              onClick={() => self.setState({ modalOpen2: true, isEdit: false })}
             />
             <Header as="h3" className="section-title">
               {self.state.category.value} Posts
@@ -120,108 +138,25 @@ class App extends Component {
             </div>
             <Feed>
               {posts.map(post => (
-                <MyPost post={post} handlePostAction={console.log} />
+                <MyPost
+                  post={post}
+                  handlePostAction={self.openModal.bind(self)}
+                />
               ))}
             </Feed>
           </Segment>
-          <Transition
+          <MyConfirmationModal
             visible={self.state.modalOpen}
-            animation="fade down"
-            unmountOnHide={true}
-            duration={350}
-          >
-            <Modal open={true} basic size="small" style={{ marginTop: '30vh' }}>
-              <Header icon="trash" content="Delete Comment" />
-              <Modal.Content>
-                <p>Are you sure you want to delete this comment?</p>
-              </Modal.Content>
-              <Modal.Actions>
-                <Button
-                  basic
-                  color="red"
-                  onClick={self.toggleModal.bind(self)}
-                  inverted
-                >
-                  <Icon name="remove" /> No
-                </Button>
-                <Button
-                  color="green"
-                  onClick={self.toggleModal.bind(self)}
-                  inverted
-                >
-                  <Icon name="checkmark" /> Yes
-                </Button>
-              </Modal.Actions>
-            </Modal>
-          </Transition>
-
-          <Transition
+            type={self.state.modalType}
+            onAction={self.closeConfirmationModal.bind(self)}
+          />
+          <MyEditModal
             visible={self.state.modalOpen2}
-            animation="fade down"
-            unmountOnHide={true}
-            duration={350}
-          >
-            <Modal
-              className="view"
-              dimmer="inverted"
-              open={true}
-              onClose={() => self.setState({ modalOpen2: false })}
-              closeOnDimmerClick={false}
-              closeIcon={true}
-            >
-              <Modal.Header icon="pin">Add Post</Modal.Header>
-              <Modal.Content scrolling={false}>
-                <Form
-                  onSubmit={event => console.log('hereee', event.target.value)}
-                  loading={false}
-                >
-                  <Form.Group widths="equal">
-                    <Form.Input
-                      fluid
-                      label="Name"
-                      placeholder="Name"
-                      onChange={event => console.log(event.target.value)}
-                      required
-                    />
-                    <Form.Select
-                      fluid
-                      label="Category"
-                      options={menuItems.slice(1).map(item => {
-                        const obj = {
-                          key: item.key,
-                          text: item.value,
-                          value: item.key
-                        };
-                        return obj;
-                      })}
-                      placeholder="Category"
-                      required
-                    />
-                  </Form.Group>
-                  <Form.Input
-                    fluid
-                    label="Title"
-                    placeholder="Title"
-                    required
-                  />
-                  <Form.TextArea
-                    label="Content"
-                    placeholder="Tell us more about it..."
-                    rows="5"
-                    required
-                  />
-                  <Form.Group>
-                    <Button basic color="grey">
-                      Cancel
-                    </Button>
-                    <Form.Button basic color="green">
-                      <Icon name="pin" />Create
-                    </Form.Button>
-                  </Form.Group>
-                </Form>
-              </Modal.Content>
-            </Modal>
-          </Transition>
+            onClose={() => self.setState({ modalOpen2: false, item: {} })}
+            item={self.state.item}
+            isEdit={self.state.isEdit}
+            categoryItems={menuItems.slice(1)}
+          />
         </div>
       </Transition>
     );

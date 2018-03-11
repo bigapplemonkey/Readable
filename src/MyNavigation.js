@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Dropdown, Icon, Menu, Header, Input } from 'semantic-ui-react';
 
-class Navigation extends Component {
+class MyNavigation extends Component {
   state = {
     isHamburgerActive: false,
     activeItem: 'date'
@@ -21,11 +21,12 @@ class Navigation extends Component {
 
   toggleHamburger() {
     this.setState({ isHamburgerActive: !this.state.isHamburgerActive });
-    this.props.onClick();
+    this.props.onHamburgerClick();
   }
 
   updateActiveItem(activeItem) {
-    this.setState({ activeItem });
+    this.setState({ activeItem: activeItem.key, isHamburgerActive: false });
+    this.props.onSort(activeItem);
   }
 
   render() {
@@ -58,7 +59,7 @@ class Navigation extends Component {
                     key={item.key}
                     active={item.key === self.state.activeItem}
                     onClick={() => {
-                      self.updateActiveItem(item.key);
+                      self.updateActiveItem(item);
                     }}
                   >
                     {item.icon && <Icon name={item.icon} />}
@@ -82,4 +83,4 @@ class Navigation extends Component {
   }
 }
 
-export default Navigation;
+export default MyNavigation;

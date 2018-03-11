@@ -60,7 +60,7 @@ body {
 .ui.feed > .event > .label .icon.thumbs {
   font-size: 1.2rem;
   margin-right: 0.4rem;
-  width: 50%;
+  width: 34%;
 }
 
 .comment .voting .icon.thumbs {
@@ -200,7 +200,11 @@ body {
 .ui.comments .add-comment {
   position: absolute;
   top: -2.2rem;
-  left: -3.2rem;
+  left: 0;
+}
+
+.ui.comments .add-comment .comment {
+  margin-left: 0;
 }
 
 .ui.top.attached.menu > .item:first-child.hamburger-link {
@@ -278,7 +282,7 @@ body {
   max-height: 0;
   overflow: hidden;
   will-change: max-height;
-  transition: max-height 0.6s linear;
+  transition: max-height 0.8s linear;
 }
 
 .ui.comments > .reply.form.is-visible,
@@ -288,6 +292,28 @@ body {
 
 .ui.dividing.header {
   margin-top: 0.7rem;
+}
+
+.ui.labeled.icon.menu .item {
+  transition: background-color 250ms linear;
+}
+
+.ui.feed > .event > .label {
+  width: 2.9em;
+}
+
+.ui.feed > .event > .label .icon.thumbs {
+  padding: 0;
+}
+
+.segment > h3.section-title,
+.sorted-by {
+  display: inline-block;
+}
+
+.sorted-by {
+  margin-left: 1rem;
+  color: rgba(0, 0, 0, 0.6);
 }
 
 @media (min-width: 1201px) {
@@ -349,9 +375,6 @@ body {
   }
   .ui.comments .comment {
     margin-left: 44px;
-  }
-  .ui.comments .add-comment {
-    left: -2.8rem;
   }
   .ui.dropdown .menu {
     left: auto;

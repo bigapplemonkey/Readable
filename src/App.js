@@ -3,13 +3,11 @@ import './App.css';
 import './semantic/dist/semantic.min.css';
 import './Custom.css';
 // Components
-import Navigation from './Navigation';
-import MyComments from './MyComments';
-import Vote from './Vote';
+import MyNavigation from './MyNavigation';
+import MySidebar from './MySidebar';
+import MyPost from './MyPost';
 import {
-  Sidebar,
   Segment,
-  Menu,
   Icon,
   Header,
   Feed,
@@ -19,10 +17,29 @@ import {
   Transition
 } from 'semantic-ui-react';
 
-const options = [
-  { key: 'react', text: 'React', value: 'react' },
-  { key: 'redux', text: 'Redux', value: 'redux' },
-  { key: 'udacity', text: 'Udacity', value: 'udacity' }
+const menuItems = [
+  { key: 'all', value: 'All', icon: 'home' },
+  { key: 'react', value: 'React', icon: 'react' },
+  { key: 'redux', value: 'Redux', icon: 'camera' },
+  { key: 'udacity', value: 'Udacity', icon: 'camera' }
+];
+
+const posts = [
+  {
+    poster: 'Peter Jhon',
+    date: 'Yesterday at 12:30AM',
+    body: `Ours is a life of constant reruns. We're always circling
+            back to where we'd we started, then starting all over again.
+            Even if we don't run extra laps that day, we surely will
+            come back for more of the same another day soon.`,
+    count: -25
+  },
+  {
+    poster: 'Kim Fu',
+    date: '5 days ago',
+    body: `Strength does not come from winning. Your struggles develop your strengths. When you go through hardships and decide not to surrender, that is strength.`,
+    count: 9
+  }
 ];
 
 class App extends Component {
@@ -30,38 +47,16 @@ class App extends Component {
     super(props);
     this.state = {
       isAppReady: false,
-      expandComments: false,
-      toggleSideBar: true,
+      toggleSideBar: false,
       modalOpen: false,
       modalOpen2: false,
-      showAddComment: false
+      sortBy: { key: 'date', value: 'Date', icon: 'sort content ascending' },
+      category: { key: 'all', value: 'All', icon: 'home' }
     };
-    this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
   }
 
   componentDidMount() {
-    console.log('here!');
-    this.updateWindowDimensions();
-    window.addEventListener('resize', this.updateWindowDimensions);
     this.setState({ isAppReady: true });
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.updateWindowDimensions);
-  }
-
-  updateWindowDimensions() {
-    const width = window.innerWidth;
-    if (width < 731) {
-      if (this.state.sidebarDirection !== 'horizontal')
-        this.setState({ sidebarDirection: 'horizontal' });
-      if (this.state.toggleSideBar) this.setState({ toggleSideBar: false });
-    } else {
-      if (this.state.sidebarDirection !== 'vertical')
-        this.setState({ sidebarDirection: 'vertical' });
-      if (!this.state.toggleSideBar) this.setState({ toggleSideBar: true });
-    }
-    //this.setState({ width: window.innerWidth, height: window.innerHeight });
   }
 
   getRandomPhoto(size) {
@@ -80,116 +75,57 @@ class App extends Component {
     this.setState({ modalOpen: !this.state.modalOpen });
   }
 
+  updateState(attribute, value) {
+    this.setState({ [attribute]: value });
+    if (attribute === 'category') this.setState({ toggleSideBar: false });
+  }
+
   render() {
     const self = this;
-    const { sidebarDirection } = this.state;
 
     return (
       <Transition
-        visible={this.state.isAppReady}
+        visible={self.state.isAppReady}
         animation="fade"
         unmountOnHide={true}
         duration={2000}
       >
         <div>
-          <Navigation onClick={this.onClick.bind(this)} />
-          <Sidebar
-            as={Menu}
-            animation={sidebarDirection === 'horizontal' ? 'overlay' : 'push'}
-            width="thin"
+          <MyNavigation
+            onHamburgerClick={self.onClick.bind(self)}
+            onSort={sortBy => self.updateState.bind(self)('sortBy', sortBy)}
+          />
+          <MySidebar
             visible={this.state.toggleSideBar}
-            icon="labeled"
-            direction={sidebarDirection === 'horizontal' ? 'top' : 'left'}
-            vertical={sidebarDirection === 'vertical'}
-            inverted
-          >
-            <Menu.Item name="home">
-              <Icon name="home" />
-              All
-            </Menu.Item>
-            <Menu.Item name="gamepad">
-              <Icon name="react" />
-              React
-            </Menu.Item>
-            <Menu.Item name="camera">
-              <Icon name="camera" />
-              Redux
-            </Menu.Item>
-            <Menu.Item name="camera">
-              <Icon name="camera" />
-              Udacity
-            </Menu.Item>
-          </Sidebar>
-          <Segment basic className={this.state.toggleSideBar ? ' dimmed' : ''}>
+            menuItems={menuItems}
+            onItemSelect={category =>
+              self.updateState.bind(self)('category', category)
+            }
+          />
+          <Segment basic className={self.state.toggleSideBar ? ' dimmed' : ''}>
             <Button
               circular
               className="add-post"
               color="green"
               icon="pin"
               size="big"
-              onClick={() => this.setState({ modalOpen2: true })}
+              onClick={() => self.setState({ modalOpen2: true })}
             />
-            <Header as="h3">Application Content</Header>
+            <Header as="h3" className="section-title">
+              {self.state.category.value} Posts
+            </Header>
+            <div className="sorted-by">
+              <Icon name={self.state.sortBy.icon} />
+              {self.state.sortBy.value}
+            </div>
             <Feed>
-              <Feed.Event>
-                <div className="feed-actions">
-                  <a>
-                    <Icon name="edit" />
-                  </a>
-                  <a onClick={this.toggleModal.bind(this)}>
-                    <Icon name="delete" />
-                  </a>
-                </div>
-                <Feed.Label
-                  children={
-                    <div>
-                      <img alt="" src={self.getRandomPhoto()} />
-                      <Vote count={5} />
-                    </div>
-                  }
-                />
-                <Feed.Content>
-                  <Feed.Summary>
-                    <div className="poster-name">Joe Henderson posted</div>
-                    <Feed.Date>3 days ago</Feed.Date>
-                  </Feed.Summary>
-                  <Feed.Extra text>
-                    <a>
-                      <h3>This is my post</h3>
-                    </a>
-                    Ours is a life of constant reruns. We're always circling
-                    back to where we'd we started, then starting all over again.
-                    Even if we don't run extra laps that day, we surely will
-                    come back for more of the same another day soon.
-                  </Feed.Extra>
-                  <MyComments />
-                </Feed.Content>
-              </Feed.Event>
-              <Feed.Event>
-                <Feed.Label image={this.getRandomPhoto()} />
-                <Feed.Content>
-                  <Feed.Summary>
-                    <a>Joe Henderson</a> posted on his page
-                    <Feed.Date>3 days ago</Feed.Date>
-                  </Feed.Summary>
-                  <Feed.Extra text>
-                    Ours is a life of constant reruns. We're always circling
-                    back to where we'd we started, then starting all over again.
-                    Even if we don't run extra laps that day, we surely will
-                    come back for more of the same another day soon.
-                  </Feed.Extra>
-                  <Feed.Meta>
-                    <Feed.Like>
-                      <Icon name="like" />
-                      5 Likes
-                    </Feed.Like>
-                  </Feed.Meta>
-                </Feed.Content>
-              </Feed.Event>
+              {posts.map(post => (
+                <MyPost post={post} handlePostAction={console.log} />
+              ))}
             </Feed>
           </Segment>
           <Transition
-            visible={this.state.modalOpen}
+            visible={self.state.modalOpen}
             animation="fade down"
             unmountOnHide={true}
             duration={350}
@@ -203,14 +139,14 @@ class App extends Component {
                 <Button
                   basic
                   color="red"
-                  onClick={this.toggleModal.bind(this)}
+                  onClick={self.toggleModal.bind(self)}
                   inverted
                 >
                   <Icon name="remove" /> No
                 </Button>
                 <Button
                   color="green"
-                  onClick={this.toggleModal.bind(this)}
+                  onClick={self.toggleModal.bind(self)}
                   inverted
                 >
                   <Icon name="checkmark" /> Yes
@@ -220,7 +156,7 @@ class App extends Component {
           </Transition>
 
           <Transition
-            visible={this.state.modalOpen2}
+            visible={self.state.modalOpen2}
             animation="fade down"
             unmountOnHide={true}
             duration={350}
@@ -229,7 +165,7 @@ class App extends Component {
               className="view"
               dimmer="inverted"
               open={true}
-              onClose={() => this.setState({ modalOpen2: false })}
+              onClose={() => self.setState({ modalOpen2: false })}
               closeOnDimmerClick={false}
               closeIcon={true}
             >
@@ -250,7 +186,14 @@ class App extends Component {
                     <Form.Select
                       fluid
                       label="Category"
-                      options={options}
+                      options={menuItems.slice(1).map(item => {
+                        const obj = {
+                          key: item.key,
+                          text: item.value,
+                          value: item.key
+                        };
+                        return obj;
+                      })}
                       placeholder="Category"
                       required
                     />

@@ -99,7 +99,7 @@ class MyComments extends Component {
           {commentMessage}
           {comments.length > 1 && (
             <a className="more" onClick={() => self.toggle('showComments')}>
-              ...more
+              ...{self.state.showComments ? 'less' : 'more'}
             </a>
           )}
         </Header>

@@ -1,14 +1,23 @@
 // React packages
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Moment from 'react-moment';
 // Components
 import { Feed, Icon, Dimmer, Loader } from 'semantic-ui-react';
 import MyComments from './MyComments';
 import Vote from './Vote';
 
 class MyPost extends Component {
+  state = {
+    isLeaving: false
+  };
   getPhoto(id) {
     return `https://api.adorable.io/avatars/47/${id}.png`;
+  }
+
+  componentWillUnmount() {
+    this.setState({ isLeaving: true });
+    //console.log(this.props.post.author);
   }
 
   render() {
@@ -18,7 +27,7 @@ class MyPost extends Component {
 
     return (
       <Feed.Event>
-        <Dimmer active={false} inverted>
+        <Dimmer active={self.state.isLeaving} inverted>
           <Loader />
         </Dimmer>
         <div className="feed-actions">
@@ -32,15 +41,17 @@ class MyPost extends Component {
         <Feed.Label
           children={
             <div>
-              <img alt="" src={self.getPhoto(post.poster)} />
-              <Vote count={post.count} handleVote={console.log} />
+              <img alt="" src={self.getPhoto(post.author)} />
+              <Vote count={post.voteScore} handleVote={console.log} />
             </div>
           }
         />
         <Feed.Content>
           <Feed.Summary>
-            <div className="poster-name">{post.poster} posted</div>
-            <Feed.Date>{post.date}</Feed.Date>
+            <div className="poster-name">{post.author} posted</div>
+            <Feed.Date>
+              <Moment fromNow>{new Date(post.timestamp)}</Moment>
+            </Feed.Date>
           </Feed.Summary>
           <Feed.Extra text>
             <a>
@@ -48,7 +59,7 @@ class MyPost extends Component {
             </a>
             {post.body}
           </Feed.Extra>
-          <MyComments />
+          <MyComments post={post.id} />
         </Feed.Content>
       </Feed.Event>
     );

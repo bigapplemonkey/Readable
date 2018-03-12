@@ -6,7 +6,7 @@ import { Transition, Modal, Form, Button, Icon } from 'semantic-ui-react';
 
 class MyEditModal extends Component {
   state = {
-    poster: '',
+    author: '',
     title: '',
     category: ''
   };
@@ -18,7 +18,7 @@ class MyEditModal extends Component {
   componentWillReceiveProps(nextProps) {
     const { item } = nextProps;
     this.setState({
-      poster: item ? item.poster : '',
+      author: item ? item.author : '',
       title: item ? item.title : '',
       category: item ? item.category : '',
       body: item ? item.body : ''
@@ -59,8 +59,8 @@ class MyEditModal extends Component {
                   fluid
                   label="Name"
                   placeholder="Name"
-                  value={self.state.poster}
-                  onChange={event => self.handleChange(event, 'poster')}
+                  value={self.state.author}
+                  onChange={event => self.handleChange(event, 'author')}
                   required
                 />
                 <Form.Select

@@ -10,37 +10,48 @@ class MyComments extends Component {
     super(props);
     this.state = {
       visible: true,
+      comments: [],
       showForm: false,
       showComments: false,
-      poster: '',
+      author: '',
       body: ''
     };
     this.toggle = this.toggle.bind(this);
   }
 
-  comments = [
-    {
-      poster: 'Matt',
-      date: 'Today at 5:42PM',
-      body: `How artistic!`,
-      count: 5
-    },
-    {
-      poster: 'Elliot Fu',
-      date: 'Yesterday at 12:30AM',
-      body: `This has been very useful for my research. Thanks as
-              well! This has been very useful for my research.
-              Thanks as well! This has been very useful for my
-              research. Thanks as well!`,
-      count: 3
-    },
-    {
-      poster: 'Joe Henderson',
-      date: '5 days ago',
-      body: `Dude, this is awesome. Thanks so much`,
-      count: -10
-    }
-  ];
+  // comments = [
+  //   {
+  //     author: 'Matt',
+  //     date: 'Today at 5:42PM',
+  //     body: `How artistic!`,
+  //     count: 5
+  //   },
+  //   {
+  //     author: 'Elliot Fu',
+  //     date: 'Yesterday at 12:30AM',
+  //     body: `This has been very useful for my research. Thanks as
+  //             well! This has been very useful for my research.
+  //             Thanks as well! This has been very useful for my
+  //             research. Thanks as well!`,
+  //     count: 3
+  //   },
+  //   {
+  //     author: 'Joe Henderson',
+  //     date: '5 days ago',
+  //     body: `Dude, this is awesome. Thanks so much`,
+  //     count: -10
+  //   }
+  // ];
+
+  componentDidMount() {
+    this.getComments(this.props.post, comments => this.setState({ comments }));
+  }
+
+  getComments(postID, callback) {
+    fetch(`http://localhost:3001/posts/${postID}/comments`, {
+      headers: { Authorization: 'monkey' }
+    }).then(response => response.json().then(data => callback(data)));
+  }
 
   toggle(attribute) {
     this.setState({ [attribute]: !this.state[attribute] });
@@ -53,10 +64,9 @@ class MyComments extends Component {
   render() {
     const self = this;
 
-    const comments = self.comments;
-    const { poster, body } = self.state;
+    const { author, body, comments } = self.state;
 
-    const isEnabled = poster.length > 0 && body.length > 0;
+    const isEnabled = author.length > 0 && body.length > 0;
 
     // Dynamic classes
     const showCommentForm = self.state.showForm ? ' is-visible' : '';
@@ -76,8 +86,8 @@ class MyComments extends Component {
           <Form.Input
             fluid
             placeholder="Name"
-            value={self.state.poster}
-            onChange={event => self.handleChange(event, 'poster')}
+            value={self.state.author}
+            onChange={event => self.handleChange(event, 'author')}
             required
           />
           <Form.TextArea
@@ -105,7 +115,7 @@ class MyComments extends Component {
         </Header>
         {comments.length > 0 && (
           <MyComment
-            key={comments[0].poster}
+            key={comments[0].author}
             comment={comments[0]}
             handleCommentAction={console.log}
           />
@@ -116,7 +126,7 @@ class MyComments extends Component {
               .slice(1)
               .map(comment => (
                 <MyComment
-                  key={comment.poster}
+                  key={comment.author}
                   comment={comment}
                   handleCommentAction={console.log}
                 />

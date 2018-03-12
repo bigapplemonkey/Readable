@@ -1,6 +1,7 @@
 // React packages
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Moment from 'react-moment';
 // Components
 import Vote from './Vote';
 import { Comment, Icon } from 'semantic-ui-react';
@@ -17,12 +18,14 @@ class MyComment extends Component {
 
     return (
       <Comment>
-        <Vote count={comment.count} handleVote={console.log} />
-        <Comment.Avatar src={self.getPhoto(comment.poster)} />
+        <Vote count={comment.voteScore} handleVote={console.log} />
+        <Comment.Avatar src={self.getPhoto(comment.author)} />
         <Comment.Content>
-          <Comment.Author as="a">{comment.poster}</Comment.Author>
+          <Comment.Author as="a">{comment.author}</Comment.Author>
           <Comment.Metadata>
-            <div>{comment.date}</div>
+            <div>
+              <Moment fromNow>{new Date(comment.timestamp)}</Moment>
+            </div>
           </Comment.Metadata>
           <Comment.Text>{comment.body}</Comment.Text>
           <Comment.Actions>

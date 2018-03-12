@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import './App.css';
-import './semantic/dist/semantic.min.css';
-import './Custom.css';
+import '../semantic/dist/semantic.min.css';
+import '../Custom.css';
 // Components
 import MyNavigation from './MyNavigation';
 import MySidebar from './MySidebar';
@@ -24,25 +23,6 @@ const menuItems = [
   { key: 'udacity', value: 'Udacity', icon: 'camera' }
 ];
 
-const posts = [
-  {
-    poster: 'Peter Jhon',
-    date: 'Yesterday at 12:30AM',
-    title: 'This is my title 1',
-    body: `Ours is a life of constant reruns. We're always circling back to where we'd we started, then starting all over again. Even if we don't run extra laps that day, we surely will come back for more of the same another day soon.`,
-    category: 'redux',
-    count: -25
-  },
-  {
-    poster: 'Kim Fu',
-    date: '5 days ago',
-    title: 'This is my title 2',
-    body: `Strength does not come from winning. Your struggles develop your strengths. When you go through hardships and decide not to surrender, that is strength.`,
-    category: 'udacity',
-    count: 9
-  }
-];
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -55,12 +35,40 @@ class App extends Component {
       item: {},
       isEdit: false,
       sortBy: { key: 'date', value: 'Date', icon: 'sort content ascending' },
-      category: { key: 'all', value: 'All', icon: 'home' }
+      category: { key: 'all', value: 'All', icon: 'home' },
+      posts: []
     };
   }
 
   componentDidMount() {
     this.setState({ isAppReady: true });
+    this.getPosts('all', posts => this.setState({ posts }));
+  }
+
+  getPosts(category, callback) {
+    let promises1 = [];
+    let categories =
+      category === 'all' ? ['react', 'redux', 'udacity'] : [category];
+    categories.forEach(category =>
+      promises1.push(
+        fetch(`http://localhost:3001/${category}/posts`, {
+          headers: { Authorization: 'monkey' }
+        })
+      )
+    );
+
+    Promise.all(promises1).then(responses => {
+      let promises2 = responses.map(response => response.json());
+      Promise.all(promises2).then(data => {
+        let finalData = [];
+        data.forEach(values => (finalData = finalData.concat(values)));
+        //console.log(finalData);
+        callback(finalData);
+      });
+    });
+
+    // .then(response => response.json())
+    // .then(data => console.log('response', data));
   }
 
   getRandomPhoto(size) {
@@ -83,19 +91,27 @@ class App extends Component {
     console.log(action);
     console.log(item);
     if (action === 'delete')
-      this.setState({ modalOpen: true, modalType: 'post' });
+      this.setState({ modalOpen: true, modalType: 'post', item: item });
     else if (action === 'edit')
       this.setState({ modalOpen2: true, item: item, isEdit: true });
   }
 
   closeConfirmationModal(toDelete) {
     this.setState({ modalOpen: false, modalType: '' });
-    console.log(toDelete);
+    if (toDelete) {
+      const posts = this.state.posts.filter(
+        post => post.author !== this.state.item.author
+      );
+      this.setState({ posts });
+    }
   }
 
   updateState(attribute, value) {
     this.setState({ [attribute]: value });
-    if (attribute === 'category') this.setState({ toggleSideBar: false });
+    if (attribute === 'category') {
+      this.setState({ toggleSideBar: false });
+      this.getPosts(value.key, posts => this.setState({ posts }));
+    }
   }
 
   render() {
@@ -136,11 +152,20 @@ class App extends Component {
               <Icon name={self.state.sortBy.icon} />
               {self.state.sortBy.value}
             </div>
+            {self.state.posts.length === 0 && (
+              <Header
+                as="div"
+                icon="attention"
+                content="No posts in this category"
+                disabled
+              />
+            )}
             <Feed>
-              {posts.map(post => (
+              {self.state.posts.map(post => (
                 <MyPost
                   post={post}
                   handlePostAction={self.openModal.bind(self)}
+                  key={post.id}
                 />
               ))}
             </Feed>

@@ -278,16 +278,19 @@ body {
 }
 
 .ui.comments > .reply.form,
-.more-comments {
+.more-comments,
+.comment .ui.form {
   max-height: 0;
   overflow: hidden;
   will-change: max-height;
-  transition: max-height 0.8s linear;
+  transition: max-height 0.6s cubic-bezier(0, 1, 0, 1);
 }
 
 .ui.comments > .reply.form.is-visible,
-.more-comments.is-visible {
+.more-comments.is-visible,
+.comment .is-visible .ui.form {
   max-height: 100vh;
+  transition: max-height 1.2s ease-in-out;
 }
 
 .ui.dividing.header {
@@ -318,6 +321,15 @@ body {
 
 .ui.form .field > label {
   text-align: left;
+}
+
+.ui.form .fields.is-hidden {
+  display: none;
+}
+
+.comment .ui.form {
+  position: relative;
+  top: -1.7rem;
 }
 
 @media (min-width: 1201px) {

@@ -5,7 +5,6 @@ $max-feed-with: 800px
 $sidebar-with: 150px
 $mobile-break-point: 730px
 $background-color: #f9f9f9
-$show-animation-timing: 0.8s
 
 $full-width: 100%
 //$half-width: 50%
@@ -230,14 +229,15 @@ body
 .ui.form .field:last-child
   text-align: right
 
-.ui.comments>.reply.form, .more-comments
+.ui.comments>.reply.form, .more-comments, .comment .ui.form
   max-height: 0
   overflow: hidden
   will-change: max-height
-  transition: max-height $show-animation-timing linear
+  transition: max-height 0.6s cubic-bezier(0, 1, 0, 1)
 
-.ui.comments>.reply.form.is-visible, .more-comments.is-visible
+.ui.comments>.reply.form.is-visible, .more-comments.is-visible, .comment .is-visible .ui.form
   max-height: 100vh
+  transition: max-height 1.2s ease-in-out
 
 .ui.dividing.header
   margin-top: 0.7rem
@@ -259,6 +259,14 @@ body
 
 .ui.form .field>label
   text-align: left
+
+.ui.form .fields.is-hidden
+  display: none
+
+.comment .ui.form
+  position: relative
+  top: -1.7rem
+
 
 
 @media (min-width: 1201px)

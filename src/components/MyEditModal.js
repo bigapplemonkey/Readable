@@ -33,6 +33,8 @@ class MyEditModal extends Component {
     const modalType = self.props.isEdit ? 'Edit' : 'Create';
     const buttonTitle = self.props.isEdit ? 'Update' : 'Create';
 
+    const hiddenClass = self.props.isEdit ? ' is-hidden' : '';
+
     return (
       <Transition
         visible={self.props.visible}
@@ -54,7 +56,7 @@ class MyEditModal extends Component {
               onSubmit={event => console.log('hereee', event.target.value)}
               loading={false}
             >
-              <Form.Group widths="equal">
+              <Form.Group widths="equal" className={hiddenClass}>
                 <Form.Input
                   fluid
                   label="Name"

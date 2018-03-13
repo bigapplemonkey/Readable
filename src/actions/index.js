@@ -53,14 +53,12 @@ export function downVotePost({ id }) {
   };
 }
 
-export function addComment({ id, timestamp, author, category, title, body }) {
+export function addComment({ id, parentId, timestamp, author, body }) {
   return {
     type: ADD_COMMENT,
     id,
     timestamp,
     author,
-    category,
-    title,
     body
   };
 }
@@ -76,7 +74,6 @@ export function updateComment({ id, title, body }) {
   return {
     type: UPDATE_COMMENT,
     id,
-    title,
     body
   };
 }

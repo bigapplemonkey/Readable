@@ -44,7 +44,10 @@ class MyComments extends Component {
   // ];
 
   componentDidMount() {
-    this.getComments(this.props.post, comments => this.setState({ comments }));
+    this.getComments(this.props.post, comments => {
+      console.log(comments);
+      this.setState({ comments });
+    });
   }
 
   getComments(postID, callback) {

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Moment from 'react-moment';
 // Components
 import Vote from './Vote';
-import { Comment, Form, TextArea, Button, Icon } from 'semantic-ui-react';
+import { Comment, Form, TextArea, Icon } from 'semantic-ui-react';
 
 class MyComment extends Component {
   state = {

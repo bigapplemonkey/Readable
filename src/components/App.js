@@ -1,4 +1,6 @@
+// React packages
 import React, { Component } from 'react';
+// Styles
 import '../semantic/dist/semantic.min.css';
 import '../Custom.css';
 // Components
@@ -62,7 +64,7 @@ class App extends Component {
       Promise.all(promises2).then(data => {
         let finalData = [];
         data.forEach(values => (finalData = finalData.concat(values)));
-        //console.log(finalData);
+        console.log(finalData);
         callback(finalData);
       });
     });

@@ -40,16 +40,14 @@ export function updatePost({ id, title, body }) {
 export function upVotePost({ id }) {
   return {
     type: UP_VOTE_POST,
-    id,
-    option: 'upVote'
+    id
   };
 }
 
 export function downVotePost({ id }) {
   return {
     type: DOWN_VOTE_POST,
-    id,
-    option: 'downVote'
+    id
   };
 }
 
@@ -81,15 +79,13 @@ export function updateComment({ id, title, body }) {
 export function upVoteComment({ id }) {
   return {
     type: UP_VOTE_COMMENT,
-    id,
-    option: 'upVote'
+    id
   };
 }
 
 export function downVoteComment({ id }) {
   return {
     type: DOWN_VOTE_COMMENT,
-    id,
-    option: 'downVote'
+    id
   };
 }

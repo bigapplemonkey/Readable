@@ -73,10 +73,25 @@ function comments(state = initialComments, action) {
       };
 
     case DELETE_COMMENT:
-      return { ...state, [id]: { ...state[id], deleted: true } };
+      let newState = Object.assign({}, state);
+      delete newState[id];
+      console.log(newState);
+      return newState;
 
     case UPDATE_COMMENT:
       return { ...state, [id]: { ...state[id], body } };
+
+    case UP_VOTE_COMMENT:
+      return {
+        ...state,
+        [id]: { ...state[id], voteScore: ++state[id]['voteScore'] }
+      };
+
+    case DOWN_VOTE_COMMENT:
+      return {
+        ...state,
+        [id]: { ...state[id], voteScore: --state[id]['voteScore'] }
+      };
 
     default:
       return state;
@@ -101,10 +116,25 @@ function posts(state = initialPosts, action) {
       };
 
     case DELETE_POST:
-      return { ...state, [id]: { ...state[id], deleted: true } };
+      let newState = Object.assign({}, state);
+      delete newState[id];
+      console.log(newState);
+      return newState;
 
     case UPDATE_POST:
       return { ...state, [id]: { ...state[id], title, body } };
+
+    case UP_VOTE_POST:
+      return {
+        ...state,
+        [id]: { ...state[id], voteScore: ++state[id]['voteScore'] }
+      };
+
+    case DOWN_VOTE_POST:
+      return {
+        ...state,
+        [id]: { ...state[id], voteScore: --state[id]['voteScore'] }
+      };
 
     default:
       return state;

@@ -2,9 +2,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Moment from 'react-moment';
+import { connect } from 'react-redux';
 // Components
 import Vote from './Vote';
 import { Comment, Form, TextArea, Icon } from 'semantic-ui-react';
+// Redux Actions
+import { upVoteComment, downVoteComment } from '../actions';
 
 class MyComment extends Component {
   state = {
@@ -20,6 +23,13 @@ class MyComment extends Component {
     this.props.handleCommentAction('edit', comment);
   }
 
+  handleVote(isUpVote) {
+    const { comment, upVoteComment, downVoteComment } = this.props;
+    isUpVote
+      ? upVoteComment({ id: comment.id })
+      : downVoteComment({ id: comment.id });
+  }
+
   render() {
     const self = this;
 
@@ -29,7 +39,10 @@ class MyComment extends Component {
 
     return (
       <Comment>
-        <Vote count={comment.voteScore} handleVote={console.log} />
+        <Vote
+          count={comment.voteScore}
+          handleVote={self.handleVote.bind(self)}
+        />
         <Comment.Avatar src={self.getPhoto(comment.author)} />
         <Comment.Content className={showCommentForm}>
           <Comment.Author as="a">{comment.author}</Comment.Author>
@@ -68,4 +81,11 @@ MyComment.propTypes = {
   handleCommentAction: PropTypes.func.isRequired
 };
 
-export default MyComment;
+function mapDispatchToProps(dispatch) {
+  return {
+    upVoteComment: data => dispatch(upVoteComment(data)),
+    downVoteComment: data => dispatch(downVoteComment(data))
+  };
+}
+
+export default connect(null, mapDispatchToProps)(MyComment);

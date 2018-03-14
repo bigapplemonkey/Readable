@@ -171,6 +171,14 @@ body {
 
 .ui.feed > .event {
   position: relative;
+  overflow: hidden;
+  will-change: max-height;
+  transition: max-height 0.5s 0.5s cubic-bezier(0, 1, 0, 1);
+  max-height: 100vh;
+}
+
+.ui.feed > .event.is-leaving {
+  max-height: 0;
 }
 
 .feed-actions {

@@ -2,14 +2,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Moment from 'react-moment';
+import { connect } from 'react-redux';
 // Components
 import { Feed, Icon, Dimmer, Loader } from 'semantic-ui-react';
 import MyComments from './MyComments';
 import Vote from './Vote';
+// Redux Actions
+import { upVotePost, downVotePost } from '../actions';
 
 class MyPost extends Component {
   state = {
-    isLeaving: false
+    //isLeaving: false
   };
   getPhoto(id) {
     return `https://api.adorable.io/avatars/47/${id}.png`;
@@ -20,14 +23,22 @@ class MyPost extends Component {
     //console.log(this.props.post.author);
   }
 
+  handleVote(isUpVote) {
+    const { post, upVotePost, downVotePost } = this.props;
+    isUpVote ? upVotePost({ id: post.id }) : downVotePost({ id: post.id });
+  }
+
   render() {
     const self = this;
 
     const { post } = self.props;
 
+    const hiddenClass = self.props.isLeaving ? ' is-leaving' : '';
+    console.log(hiddenClass);
+
     return (
-      <Feed.Event>
-        <Dimmer active={self.state.isLeaving} inverted>
+      <Feed.Event className={hiddenClass}>
+        <Dimmer active={self.props.isLeaving} inverted>
           <Loader />
         </Dimmer>
         <div className="feed-actions">
@@ -42,7 +53,10 @@ class MyPost extends Component {
           children={
             <div>
               <img alt="" src={self.getPhoto(post.author)} />
-              <Vote count={post.voteScore} handleVote={console.log} />
+              <Vote
+                count={post.voteScore}
+                handleVote={self.handleVote.bind(self)}
+              />
             </div>
           }
         />
@@ -71,4 +85,11 @@ MyPost.propTypes = {
   // handleCommentAction: PropTypes.func.isRequired
 };
 
-export default MyPost;
+function mapDispatchToProps(dispatch) {
+  return {
+    upVotePost: data => dispatch(upVotePost(data)),
+    downVotePost: data => dispatch(downVotePost(data))
+  };
+}
+
+export default connect(null, mapDispatchToProps)(MyPost);

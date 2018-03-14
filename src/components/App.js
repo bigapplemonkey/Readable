@@ -19,7 +19,7 @@ import {
   Transition
 } from 'semantic-ui-react';
 // Redux Actions
-import { addPost, updatePost } from '../actions';
+import { addPost, updatePost, deletePost } from '../actions';
 
 const menuItems = [
   { key: 'all', value: 'All', icon: 'home' },
@@ -41,7 +41,8 @@ class App extends Component {
       isEdit: false,
       sortBy: { key: 'date', value: 'Date', icon: 'sort content ascending' },
       category: { key: 'all', value: 'All', icon: 'home' },
-      isFeedVisible: false
+      isFeedVisible: false,
+      deletedPost: ''
     };
   }
 
@@ -54,26 +55,20 @@ class App extends Component {
     this.setState({ toggleSideBar: !this.state.toggleSideBar });
   }
 
-  toggleModal() {
-    this.setState({ modalOpen: !this.state.modalOpen });
-  }
-
   openModal(action, item) {
-    // console.log(action);
-    // console.log(item);
     if (action === 'delete')
-      this.setState({ modalOpen: true, modalType: 'post', item: item });
+      this.setState({ modalOpen: true, modalType: 'post', item });
     else if (action === 'edit')
-      this.setState({ modalOpen2: true, item: item, isEdit: true });
+      this.setState({ modalOpen2: true, item, isEdit: true });
   }
 
   closeConfirmationModal(toDelete) {
     this.setState({ modalOpen: false, modalType: '' });
     if (toDelete) {
-      const posts = this.state.posts.filter(
-        post => post.author !== this.state.item.author
-      );
-      this.setState({ posts });
+      const { id } = this.state.item;
+      this.setState({ deletedPost: id }, () => {
+        setTimeout(() => this.props.deletePost({ id }), 800);
+      });
     }
   }
 
@@ -164,7 +159,9 @@ class App extends Component {
               color="green"
               icon="pin"
               size="big"
-              onClick={() => self.setState({ modalOpen2: true, isEdit: false })}
+              onClick={() =>
+                self.setState({ modalOpen2: true, isEdit: false, item: {} })
+              }
             />
             <Transition
               visible={self.state.isFeedVisible}
@@ -193,6 +190,7 @@ class App extends Component {
                       post={post}
                       handlePostAction={self.openModal.bind(self)}
                       key={post.id}
+                      isLeaving={post.id === self.state.deletedPost}
                     />
                   ))}
                 </Feed>
@@ -229,7 +227,8 @@ function mapStateToProps({ posts }) {
 function mapDispatchToProps(dispatch) {
   return {
     addPost: data => dispatch(addPost(data)),
-    updatePost: data => dispatch(updatePost(data))
+    updatePost: data => dispatch(updatePost(data)),
+    deletePost: data => dispatch(deletePost(data))
   };
 }
 

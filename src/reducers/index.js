@@ -55,7 +55,7 @@ const initialComments = {
   }
 };
 
-function comment(state = initialComments, action) {
+function comments(state = initialComments, action) {
   const { id, parentId, timestamp, author, body } = action;
   switch (action.type) {
     case ADD_COMMENT:
@@ -83,7 +83,7 @@ function comment(state = initialComments, action) {
   }
 }
 
-function post(state = initialPosts, action) {
+function posts(state = initialPosts, action) {
   const { id, timestamp, author, category, title, body } = action;
   switch (action.type) {
     case ADD_POST:
@@ -112,6 +112,6 @@ function post(state = initialPosts, action) {
 }
 
 export default combineReducers({
-  comment,
-  post
+  comments,
+  posts
 });

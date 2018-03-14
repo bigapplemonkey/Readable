@@ -8,11 +8,18 @@ class MyEditModal extends Component {
   state = {
     author: '',
     title: '',
-    category: ''
+    category: '',
+    body: '',
+    isProcessing: false
   };
 
   handleChange(event, attribute) {
-    this.setState({ [attribute]: event.target.value });
+    this.setState({
+      [attribute]:
+        attribute === 'category'
+          ? event.target.innerText.toLowerCase()
+          : event.target.value
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -25,10 +32,21 @@ class MyEditModal extends Component {
     });
   }
 
+  onSubmit() {
+    this.setState({ isProcessing: true }, () => {
+      const { item, isEdit } = this.props;
+      const action = isEdit ? 'update' : 'create';
+      const { author, title, category, body } = this.state;
+      setTimeout(() => {
+        this.props.onAction(action, { ...item, author, title, category, body });
+        this.setState({ isProcessing: false });
+      }, 200);
+    });
+  }
   render() {
     const self = this;
 
-    const { categoryItems } = self.props;
+    const { categoryItems, item } = self.props;
 
     const modalType = self.props.isEdit ? 'Edit' : 'Create';
     const buttonTitle = self.props.isEdit ? 'Update' : 'Create';
@@ -53,15 +71,15 @@ class MyEditModal extends Component {
           <Modal.Header icon="pin">{modalType} Post</Modal.Header>
           <Modal.Content scrolling={false}>
             <Form
-              onSubmit={event => console.log('hereee', event.target.value)}
-              loading={false}
+              onSubmit={self.onSubmit.bind(self)}
+              loading={self.state.isProcessing}
             >
               <Form.Group widths="equal" className={hiddenClass}>
                 <Form.Input
                   fluid
                   label="Name"
                   placeholder="Name"
-                  value={self.state.author}
+                  defaultValue={item.author}
                   onChange={event => self.handleChange(event, 'author')}
                   required
                 />
@@ -77,7 +95,7 @@ class MyEditModal extends Component {
                     return obj;
                   })}
                   placeholder="Category"
-                  value={self.state.category}
+                  defaultValue={item.category}
                   onChange={event => self.handleChange(event, 'category')}
                   required
                 />
@@ -87,14 +105,14 @@ class MyEditModal extends Component {
                 label="Title"
                 placeholder="Title"
                 required
-                value={self.state.title}
+                defaultValue={item.title}
                 onChange={event => self.handleChange(event, 'title')}
               />
               <Form.TextArea
                 label="Content"
                 placeholder="Tell us more about it..."
-                value={self.state.body}
-                onChange={event => self.handleChange(event, 'value')}
+                defaultValue={item.body}
+                onChange={event => self.handleChange(event, 'body')}
                 rows="5"
                 required
               />

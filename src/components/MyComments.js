@@ -1,16 +1,17 @@
 // React packages
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 // Components
 import MyComment from './MyComment';
 import { Comment, Form, Icon, Header } from 'semantic-ui-react';
+import { addComment, updateComment } from '../actions';
 
 class MyComments extends Component {
   constructor(props) {
     super(props);
     this.state = {
       visible: true,
-      comments: [],
       showForm: false,
       showComments: false,
       author: '',
@@ -43,18 +44,18 @@ class MyComments extends Component {
   //   }
   // ];
 
-  componentDidMount() {
-    this.getComments(this.props.post, comments => {
-      console.log(comments);
-      this.setState({ comments });
-    });
-  }
+  // componentDidMount() {
+  //   this.getComments(this.props.post, comments => {
+  //     // console.log(comments);
+  //     this.setState({ comments });
+  //   });
+  // }
 
-  getComments(postID, callback) {
-    fetch(`http://localhost:3001/posts/${postID}/comments`, {
-      headers: { Authorization: 'monkey' }
-    }).then(response => response.json().then(data => callback(data)));
-  }
+  // getComments(postID, callback) {
+  //   fetch(`http://localhost:3001/posts/${postID}/comments`, {
+  //     headers: { Authorization: 'monkey' }
+  //   }).then(response => response.json().then(data => callback(data)));
+  // }
 
   toggle(attribute) {
     this.setState({ [attribute]: !this.state[attribute] });
@@ -67,7 +68,8 @@ class MyComments extends Component {
   render() {
     const self = this;
 
-    const { author, body, comments } = self.state;
+    const { author, body } = self.state;
+    const { comments } = self.props;
 
     const isEnabled = author.length > 0 && body.length > 0;
 
@@ -143,4 +145,24 @@ class MyComments extends Component {
 
 MyComments.propTypes = {};
 
-export default MyComments;
+function mapStateToProps({ comments }, myProps) {
+  let formattedComments = [];
+  Object.keys(comments).forEach(key => {
+    if (comments[key].parentId === myProps.post)
+      formattedComments.push({
+        ...comments[key],
+        id: key
+      });
+  });
+
+  return { comments: formattedComments };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    addPost: data => dispatch(addComment(data)),
+    updatePost: data => dispatch(updateComment(data))
+  };
+}
+
+export default connect(mapStateToProps)(MyComments);

@@ -1,5 +1,6 @@
 // React packages
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 // Styles
 import '../semantic/dist/semantic.min.css';
 import '../Custom.css';
@@ -17,6 +18,8 @@ import {
   Button,
   Transition
 } from 'semantic-ui-react';
+// Redux Actions
+import { addPost, updatePost } from '../actions';
 
 const menuItems = [
   { key: 'all', value: 'All', icon: 'home' },
@@ -38,47 +41,13 @@ class App extends Component {
       isEdit: false,
       sortBy: { key: 'date', value: 'Date', icon: 'sort content ascending' },
       category: { key: 'all', value: 'All', icon: 'home' },
-      posts: []
+      isFeedVisible: false
     };
   }
 
   componentDidMount() {
-    this.setState({ isAppReady: true });
-    this.getPosts('all', posts => this.setState({ posts }));
-  }
-
-  getPosts(category, callback) {
-    let promises1 = [];
-    let categories =
-      category === 'all' ? ['react', 'redux', 'udacity'] : [category];
-    categories.forEach(category =>
-      promises1.push(
-        fetch(`http://localhost:3001/${category}/posts`, {
-          headers: { Authorization: 'monkey' }
-        })
-      )
-    );
-
-    Promise.all(promises1).then(responses => {
-      let promises2 = responses.map(response => response.json());
-      Promise.all(promises2).then(data => {
-        let finalData = [];
-        data.forEach(values => (finalData = finalData.concat(values)));
-        console.log(finalData);
-        callback(finalData);
-      });
-    });
-
-    // .then(response => response.json())
-    // .then(data => console.log('response', data));
-  }
-
-  getRandomPhoto(size) {
-    let animals = ['cat', 'dog', 'monkey', 'ape', 'squirrel', 'beaver'];
-    const randAnimal = animals[Math.floor(Math.random() * animals.length)];
-    return `https://api.adorable.io/avatars/${
-      size ? size : '35'
-    }/${randAnimal}.png`;
+    console.log(this.props);
+    this.setState({ isAppReady: true, isFeedVisible: true });
   }
 
   onClick() {
@@ -90,8 +59,8 @@ class App extends Component {
   }
 
   openModal(action, item) {
-    console.log(action);
-    console.log(item);
+    // console.log(action);
+    // console.log(item);
     if (action === 'delete')
       this.setState({ modalOpen: true, modalType: 'post', item: item });
     else if (action === 'edit')
@@ -109,16 +78,66 @@ class App extends Component {
   }
 
   updateState(attribute, value) {
-    this.setState({ [attribute]: value });
-    if (attribute === 'category') {
-      this.setState({ toggleSideBar: false });
-      this.getPosts(value.key, posts => this.setState({ posts }));
+    if (attribute === 'category' && value.key !== this.state.category.key) {
+      this.setState({ toggleSideBar: false, isFeedVisible: false }, () => {
+        this.setState({ [attribute]: value }, () => {
+          this.setState({ isFeedVisible: true });
+        });
+      });
+    } else this.setState({ [attribute]: value });
+  }
+
+  handleModalAction(action, item) {
+    console.log(action);
+    console.log(item);
+
+    const { title, body } = item;
+
+    action === 'create'
+      ? this.props.addPost({
+          ...item,
+          id: this.guid(),
+          deleted: false,
+          timestamp: Date.now()
+        })
+      : this.props.updatePost({
+          ...item,
+          title,
+          body
+        });
+
+    this.setState({ modalOpen2: false, item: {} });
+  }
+
+  guid() {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
     }
+    return (
+      s4() +
+      s4() +
+      '-' +
+      s4() +
+      '-' +
+      s4() +
+      '-' +
+      s4() +
+      '-' +
+      s4() +
+      s4() +
+      s4()
+    );
   }
 
   render() {
     const self = this;
 
+    let { posts } = self.props;
+    if (self.state.category.key !== 'all')
+      posts = posts.filter(post => post.category === self.state.category.key);
+    posts = posts.sort((x, y) => y.timestamp - x.timestamp);
     return (
       <Transition
         visible={self.state.isAppReady}
@@ -147,30 +166,38 @@ class App extends Component {
               size="big"
               onClick={() => self.setState({ modalOpen2: true, isEdit: false })}
             />
-            <Header as="h3" className="section-title">
-              {self.state.category.value} Posts
-            </Header>
-            <div className="sorted-by">
-              <Icon name={self.state.sortBy.icon} />
-              {self.state.sortBy.value}
-            </div>
-            {self.state.posts.length === 0 && (
-              <Header
-                as="div"
-                icon="attention"
-                content="No posts in this category"
-                disabled
-              />
-            )}
-            <Feed>
-              {self.state.posts.map(post => (
-                <MyPost
-                  post={post}
-                  handlePostAction={self.openModal.bind(self)}
-                  key={post.id}
-                />
-              ))}
-            </Feed>
+            <Transition
+              visible={self.state.isFeedVisible}
+              animation="fade up"
+              duration={{ hide: 0, show: 500 }}
+            >
+              <div>
+                <Header as="h3" className="section-title">
+                  {self.state.category.value} Posts
+                </Header>
+                <div className="sorted-by">
+                  <Icon name={self.state.sortBy.icon} />
+                  {self.state.sortBy.value}
+                </div>
+                {posts.length === 0 && (
+                  <Header
+                    as="div"
+                    icon="attention"
+                    content="No posts in this category"
+                    disabled
+                  />
+                )}
+                <Feed>
+                  {posts.map(post => (
+                    <MyPost
+                      post={post}
+                      handlePostAction={self.openModal.bind(self)}
+                      key={post.id}
+                    />
+                  ))}
+                </Feed>
+              </div>
+            </Transition>
           </Segment>
           <MyConfirmationModal
             visible={self.state.modalOpen}
@@ -180,6 +207,7 @@ class App extends Component {
           <MyEditModal
             visible={self.state.modalOpen2}
             onClose={() => self.setState({ modalOpen2: false, item: {} })}
+            onAction={self.handleModalAction.bind(self)}
             item={self.state.item}
             isEdit={self.state.isEdit}
             categoryItems={menuItems.slice(1)}
@@ -190,4 +218,19 @@ class App extends Component {
   }
 }
 
-export default App;
+function mapStateToProps({ posts }) {
+  const formattedPosts = Object.keys(posts).map(key => ({
+    ...posts[key],
+    id: key
+  }));
+  return { posts: formattedPosts };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    addPost: data => dispatch(addPost(data)),
+    updatePost: data => dispatch(updatePost(data))
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

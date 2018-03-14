@@ -92,7 +92,6 @@ class App extends Component {
       ? this.props.addPost({
           ...item,
           id: this.guid(),
-          deleted: false,
           timestamp: Date.now()
         })
       : this.props.updatePost({

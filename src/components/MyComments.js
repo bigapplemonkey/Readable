@@ -4,16 +4,16 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 // Components
 import MyComment from './MyComment';
-import { Comment, Form, Icon, Header } from 'semantic-ui-react';
-import { addComment, updateComment } from '../actions';
+import { Comment, Form, Icon, Header, Button } from 'semantic-ui-react';
+import { addComment } from '../actions';
 
 class MyComments extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      visible: true,
       showForm: false,
       showComments: false,
+      isProcessing: false,
       author: '',
       body: ''
     };
@@ -58,18 +58,72 @@ class MyComments extends Component {
   // }
 
   toggle(attribute) {
-    this.setState({ [attribute]: !this.state[attribute] });
+    if (attribute === 'showForm') {
+      const isShown = !this.state[attribute];
+      isShown
+        ? this.setState({
+            [attribute]: !this.state[attribute],
+            author: '',
+            body: ''
+          })
+        : this.setState({ [attribute]: !this.state[attribute] });
+    } else this.setState({ [attribute]: !this.state[attribute] });
   }
 
   handleChange(event, attribute) {
     this.setState({ [attribute]: event.target.value });
   }
 
+  guid() {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+    }
+    return (
+      s4() +
+      s4() +
+      '-' +
+      s4() +
+      '-' +
+      s4() +
+      '-' +
+      s4() +
+      '-' +
+      s4() +
+      s4() +
+      s4()
+    );
+  }
+
+  onSubmit() {
+    console.log('here');
+    this.setState({ isProcessing: true }, () => {
+      console.log(this.props.post);
+      const { body, author } = this.state;
+      setTimeout(() => {
+        this.props.addComment({
+          timestamp: Date.now(),
+          id: this.guid(),
+          parentId: this.props.post,
+          body,
+          author
+        });
+        this.setState({
+          author: '',
+          body: '',
+          isProcessing: false,
+          showForm: false
+        });
+      }, 200);
+    });
+  }
+
   render() {
     const self = this;
 
     const { author, body } = self.state;
-    const { comments } = self.props;
+    let { comments } = self.props;
 
     const isEnabled = author.length > 0 && body.length > 0;
 
@@ -82,33 +136,47 @@ class MyComments extends Component {
       comments.length > 0 ? comments.length : 'No '
     } Comment${comments.length === 1 ? '' : 's'}`;
 
+    comments = comments.sort((x, y) => y.timestamp - x.timestamp);
+
     return (
       <Comment.Group>
         <a className="add-comment" onClick={() => self.toggle('showForm')}>
           <Icon name="comment outline" /> Comment
         </a>
-        <Form loading={false} className={showCommentForm} reply>
+        <Form
+          loading={self.state.isProcessing}
+          className={showCommentForm}
+          reply
+        >
           <Form.Input
             fluid
             placeholder="Name"
             value={self.state.author}
             onChange={event => self.handleChange(event, 'author')}
-            required
           />
           <Form.TextArea
             placeholder="Tell us what you think..."
             value={self.state.body}
             onChange={event => self.handleChange(event, 'body')}
-            required
           />
-          <Form.Button
-            color="green"
-            size="tiny"
-            loading={false}
-            disabled={!isEnabled}
-          >
-            <Icon name="comment outline" />Add Comment
-          </Form.Button>
+          <Form.Group>
+            <Button
+              color="gray"
+              size="tiny"
+              loading={false}
+              content="Cancel"
+              onClick={() => self.toggle('showForm')}
+            />
+            <Form.Button
+              color="green"
+              size="tiny"
+              loading={false}
+              disabled={!isEnabled}
+              onClick={self.onSubmit.bind(self)}
+            >
+              <Icon name="comment outline" />Add Comment
+            </Form.Button>
+          </Form.Group>
         </Form>
         <Header as="h4" dividing>
           {commentMessage}
@@ -160,9 +228,8 @@ function mapStateToProps({ comments }, myProps) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    addPost: data => dispatch(addComment(data)),
-    updatePost: data => dispatch(updateComment(data))
+    addComment: data => dispatch(addComment(data))
   };
 }
 
-export default connect(mapStateToProps)(MyComments);
+export default connect(mapStateToProps, mapDispatchToProps)(MyComments);

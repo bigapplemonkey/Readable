@@ -56,6 +56,7 @@ export function addComment({ id, parentId, timestamp, author, body }) {
     type: ADD_COMMENT,
     id,
     timestamp,
+    parentId,
     author,
     body
   };

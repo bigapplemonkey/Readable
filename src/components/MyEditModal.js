@@ -43,6 +43,7 @@ class MyEditModal extends Component {
       }, 200);
     });
   }
+
   render() {
     const self = this;
 

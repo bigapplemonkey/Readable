@@ -174,7 +174,7 @@ body {
   overflow: hidden;
   will-change: max-height;
   transition: max-height 0.5s 0.5s cubic-bezier(0, 1, 0, 1);
-  max-height: 100vh;
+  max-height: 200vh;
 }
 
 .ui.feed > .event.is-leaving {
@@ -297,7 +297,7 @@ body {
 .ui.comments > .reply.form.is-visible,
 .more-comments.is-visible,
 .comment .is-visible .ui.form {
-  max-height: 100vh;
+  max-height: 200vh;
   transition: max-height 1.2s ease-in-out;
 }
 

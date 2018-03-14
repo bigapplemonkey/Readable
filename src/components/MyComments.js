@@ -58,16 +58,16 @@ class MyComments extends Component {
   // }
 
   toggle(attribute) {
+    const isShown = !this.state[attribute];
     if (attribute === 'showForm') {
-      const isShown = !this.state[attribute];
       isShown
         ? this.setState({
-            [attribute]: !this.state[attribute],
+            [attribute]: isShown,
             author: '',
             body: ''
           })
-        : this.setState({ [attribute]: !this.state[attribute] });
-    } else this.setState({ [attribute]: !this.state[attribute] });
+        : this.setState({ [attribute]: isShown });
+    } else this.setState({ [attribute]: isShown });
   }
 
   handleChange(event, attribute) {
@@ -156,12 +156,12 @@ class MyComments extends Component {
           />
           <Form.TextArea
             placeholder="Tell us what you think..."
-            value={self.state.body}
             onChange={event => self.handleChange(event, 'body')}
           />
           <Form.Group>
             <Button
-              color="gray"
+              basic
+              color="grey"
               size="tiny"
               loading={false}
               content="Cancel"

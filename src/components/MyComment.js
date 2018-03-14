@@ -5,13 +5,15 @@ import Moment from 'react-moment';
 import { connect } from 'react-redux';
 // Components
 import Vote from './Vote';
-import { Comment, Form, TextArea, Icon } from 'semantic-ui-react';
+import { Comment, Form, TextArea, Button, Icon } from 'semantic-ui-react';
 // Redux Actions
-import { upVoteComment, downVoteComment } from '../actions';
+import { upVoteComment, downVoteComment, updateComment } from '../actions';
 
 class MyComment extends Component {
   state = {
-    editable: false
+    editable: false,
+    isProcessing: false,
+    body: ''
   };
 
   getPhoto(id) {
@@ -19,8 +21,10 @@ class MyComment extends Component {
   }
 
   toggleEditMode(comment) {
-    this.setState({ editable: !this.state.editable });
-    this.props.handleCommentAction('edit', comment);
+    const editMode = !this.state.editable;
+    editMode
+      ? this.setState({ editable: editMode, body: this.props.comment.body })
+      : this.setState({ editable: editMode });
   }
 
   handleVote(isUpVote) {
@@ -28,6 +32,24 @@ class MyComment extends Component {
     isUpVote
       ? upVoteComment({ id: comment.id })
       : downVoteComment({ id: comment.id });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({ body: nextProps.comment.body });
+  }
+
+  handleUpdate() {
+    const comment = this.props.comment;
+    if (comment.body !== this.state.body) {
+      this.setState({ isProcessing: true }, () => {
+        setTimeout(() => {
+          this.props.updateComment({ id: comment.id, body: this.state.body });
+          this.setState({ editable: false }, () =>
+            this.setState({ isProcessing: false })
+          );
+        }, 400);
+      });
+    } else this.setState({ editable: false });
   }
 
   render() {
@@ -52,13 +74,32 @@ class MyComment extends Component {
             </div>
           </Comment.Metadata>
           <Comment.Text>{comment.body}</Comment.Text>
-          <Form loading={false}>
+          <Form loading={self.state.isProcessing}>
             <Form.Field>
-              <TextArea defaultValue={comment.body} rows="2" />
+              <TextArea
+                value={self.state.body}
+                rows="2"
+                onChange={event => self.setState({ body: event.target.value })}
+              />
             </Form.Field>
-            <Form.Button color="green" size="mini" loading={false}>
-              <Icon name="comment outline" />Update
-            </Form.Button>
+            <Form.Group>
+              <Button
+                basic
+                color="grey"
+                size="tiny"
+                loading={false}
+                content="Cancel"
+                onClick={() => self.toggleEditMode(comment)}
+              />
+              <Form.Button
+                color="green"
+                size="mini"
+                loading={false}
+                onClick={self.handleUpdate.bind(self)}
+              >
+                <Icon name="comment outline" />Update
+              </Form.Button>
+            </Form.Group>
           </Form>
           <Comment.Actions>
             <Comment.Action
@@ -84,7 +125,8 @@ MyComment.propTypes = {
 function mapDispatchToProps(dispatch) {
   return {
     upVoteComment: data => dispatch(upVoteComment(data)),
-    downVoteComment: data => dispatch(downVoteComment(data))
+    downVoteComment: data => dispatch(downVoteComment(data)),
+    updateComment: data => dispatch(updateComment(data))
   };
 }
 

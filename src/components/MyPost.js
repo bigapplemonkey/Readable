@@ -34,7 +34,6 @@ class MyPost extends Component {
     const { post } = self.props;
 
     const hiddenClass = self.props.isLeaving ? ' is-leaving' : '';
-    console.log(hiddenClass);
 
     return (
       <Feed.Event className={hiddenClass}>

@@ -48,11 +48,19 @@ class MyEditModal extends Component {
     const self = this;
 
     const { categoryItems, item } = self.props;
+    const { author, body, category, title } = self.state;
 
     const modalType = self.props.isEdit ? 'Edit' : 'Create';
     const buttonTitle = self.props.isEdit ? 'Update' : 'Create';
 
     const hiddenClass = self.props.isEdit ? ' is-hidden' : '';
+
+    const isEnabled =
+      author &&
+      author.length > 0 &&
+      (body && body.length > 0) &&
+      (category && category.length > 0) &&
+      (title && title.length > 0);
 
     return (
       <Transition
@@ -121,7 +129,7 @@ class MyEditModal extends Component {
                 <Button basic color="grey">
                   Cancel
                 </Button>
-                <Form.Button basic color="green">
+                <Form.Button color="green" disabled={!isEnabled}>
                   <Icon name="pin" />
                   {buttonTitle}
                 </Form.Button>

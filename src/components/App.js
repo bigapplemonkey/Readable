@@ -112,7 +112,7 @@ class App extends Component {
     this.setState({ isProcessing: true }, () => {
       setTimeout(
         () =>
-          this.setState({ query: query.toLowerCase() }, () =>
+          this.setState({ query }, () =>
             this.setState({ isProcessing: false })
           ),
         300
@@ -156,7 +156,7 @@ class App extends Component {
       posts = posts.filter(post =>
         (post.body + post.title + post.author + post.category)
           .toLowerCase()
-          .includes(query)
+          .includes(query.toLowerCase())
       );
 
     return (
@@ -208,7 +208,9 @@ class App extends Component {
                   <Header
                     as="div"
                     icon="attention"
-                    content="No posts in this category"
+                    content={`No posts in this category${
+                      query && query !== '' ? ` for '${query}'` : ''
+                    }`}
                     disabled
                   />
                 )}

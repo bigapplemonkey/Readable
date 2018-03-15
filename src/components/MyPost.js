@@ -63,10 +63,23 @@ class MyPost extends Component {
           <Feed.Summary>
             <div className="poster-name">
               {post.author} posted{self.props.category.key === 'all' && (
-                <a>
-                  {post.category.charAt(0).toUpperCase() +
-                    post.category.slice(1)}
-                </a>
+                <span>
+                  {' '}
+                  in{' '}
+                  <a
+                    onClick={() =>
+                      self.props.categoryClick({
+                        key: post.category,
+                        value:
+                          post.category.charAt(0).toUpperCase() +
+                          post.category.slice(1)
+                      })
+                    }
+                  >
+                    {post.category.charAt(0).toUpperCase() +
+                      post.category.slice(1)}
+                  </a>
+                </span>
               )}
             </div>
             <Feed.Date>

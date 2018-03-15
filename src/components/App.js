@@ -16,7 +16,9 @@ import {
   Header,
   Feed,
   Button,
-  Transition
+  Transition,
+  Dimmer,
+  Loader
 } from 'semantic-ui-react';
 // Redux Actions
 import { addPost, updatePost, deletePost } from '../actions';
@@ -42,7 +44,9 @@ class App extends Component {
       sortBy: { key: 'date', value: 'Date', icon: 'sort content ascending' },
       category: { key: 'all', value: 'All', icon: 'home' },
       isFeedVisible: false,
-      deletedPost: ''
+      deletedPost: '',
+      query: '',
+      isProcessing: false
     };
   }
 
@@ -103,6 +107,19 @@ class App extends Component {
     this.setState({ modalOpen2: false, item: {} });
   }
 
+  handleSearch(query) {
+    console.log(query);
+    this.setState({ isProcessing: true }, () => {
+      setTimeout(
+        () =>
+          this.setState({ query: query.toLowerCase() }, () =>
+            this.setState({ isProcessing: false })
+          ),
+        300
+      );
+    });
+  }
+
   guid() {
     function s4() {
       return Math.floor((1 + Math.random()) * 0x10000)
@@ -129,9 +146,19 @@ class App extends Component {
     const self = this;
 
     let { posts } = self.props;
-    if (self.state.category.key !== 'all')
-      posts = posts.filter(post => post.category === self.state.category.key);
+    const { category, query } = self.state;
+
+    if (category.key !== 'all')
+      posts = posts.filter(post => post.category === category.key);
     posts = posts.sort((x, y) => y.timestamp - x.timestamp);
+
+    if (query && query !== '')
+      posts = posts.filter(post =>
+        (post.body + post.title + post.author + post.category)
+          .toLowerCase()
+          .includes(query)
+      );
+
     return (
       <Transition
         visible={self.state.isAppReady}
@@ -143,10 +170,12 @@ class App extends Component {
           <MyNavigation
             onHamburgerClick={self.onClick.bind(self)}
             onSort={sortBy => self.updateState.bind(self)('sortBy', sortBy)}
+            onSearch={self.handleSearch.bind(self)}
           />
           <MySidebar
             visible={this.state.toggleSideBar}
             menuItems={menuItems}
+            item={self.state.category.key}
             onItemSelect={category =>
               self.updateState.bind(self)('category', category)
             }
@@ -184,12 +213,22 @@ class App extends Component {
                   />
                 )}
                 <Feed>
+                  <Dimmer
+                    className="search-processing"
+                    active={self.state.isProcessing}
+                    inverted
+                  >
+                    <Loader />
+                  </Dimmer>
                   {posts.map(post => (
                     <MyPost
                       post={post}
                       handlePostAction={self.openModal.bind(self)}
                       key={post.id}
                       category={self.state.category}
+                      categoryClick={category =>
+                        self.updateState.bind(self)('category', category)
+                      }
                       isLeaving={post.id === self.state.deletedPost}
                     />
                   ))}

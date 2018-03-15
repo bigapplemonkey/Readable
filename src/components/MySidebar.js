@@ -42,6 +42,10 @@ class MySidebar extends Component {
     this.props.onItemSelect(activeItem);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.item) this.setState({ activeItem: nextProps.item });
+  }
+
   render() {
     const self = this;
 

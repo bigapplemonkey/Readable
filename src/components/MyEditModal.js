@@ -79,10 +79,7 @@ class MyEditModal extends Component {
         >
           <Modal.Header icon="pin">{modalType} Post</Modal.Header>
           <Modal.Content scrolling={false}>
-            <Form
-              onSubmit={self.onSubmit.bind(self)}
-              loading={self.state.isProcessing}
-            >
+            <Form loading={self.state.isProcessing}>
               <Form.Group widths="equal" className={hiddenClass}>
                 <Form.Input
                   fluid
@@ -90,7 +87,6 @@ class MyEditModal extends Component {
                   placeholder="Name"
                   defaultValue={item.author}
                   onChange={event => self.handleChange(event, 'author')}
-                  required
                 />
                 <Form.Select
                   fluid
@@ -106,14 +102,12 @@ class MyEditModal extends Component {
                   placeholder="Category"
                   defaultValue={item.category}
                   onChange={event => self.handleChange(event, 'category')}
-                  required
                 />
               </Form.Group>
               <Form.Input
                 fluid
                 label="Title"
                 placeholder="Title"
-                required
                 defaultValue={item.title}
                 onChange={event => self.handleChange(event, 'title')}
               />
@@ -123,13 +117,16 @@ class MyEditModal extends Component {
                 defaultValue={item.body}
                 onChange={event => self.handleChange(event, 'body')}
                 rows="5"
-                required
               />
               <Form.Group>
-                <Button basic color="grey">
+                <Button basic color="grey" onClick={() => self.props.onClose()}>
                   Cancel
                 </Button>
-                <Form.Button color="green" disabled={!isEnabled}>
+                <Form.Button
+                  color="green"
+                  onClick={self.onSubmit.bind(self)}
+                  disabled={!isEnabled}
+                >
                   <Icon name="pin" />
                   {buttonTitle}
                 </Form.Button>

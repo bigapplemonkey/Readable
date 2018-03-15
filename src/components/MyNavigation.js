@@ -69,7 +69,9 @@ class MyNavigation extends Component {
               <Input
                 icon={{ name: 'search', circular: true, link: false }}
                 placeholder="Search..."
-                onChange={event => console.log(event.target.value.trim())}
+                onKeyUp={event =>
+                  self.props.onSearch(event.target.value.trim())
+                }
               />
               <div className="results" />
             </div>

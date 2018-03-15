@@ -277,6 +277,16 @@ body
 .ui.header.section-title
   margin-top: 2rem
 
+.ui.form .field > label:after
+  margin: -.2em 0 0 .2em
+  content: '*'
+  color: #db2828
+  display: inline-block
+  vertical-align: top
+
+.ui.inverted.dimmer.search-processing
+    margin-left: $sidebar-with
+    width: calc(100% - #{$sidebar-with})
 
 @media (min-width: 1201px)
   .ui.attached.inverted.menu
@@ -383,6 +393,10 @@ body
 
   .ui.comments .comment .actions
     top: -0.1rem
+
+  .ui.inverted.dimmer.search-processing
+    margin-left: 0
+    width: 100%
 
 
 @media (max-width: 531px)

@@ -61,7 +61,14 @@ class MyPost extends Component {
         />
         <Feed.Content>
           <Feed.Summary>
-            <div className="poster-name">{post.author} posted</div>
+            <div className="poster-name">
+              {post.author} posted{self.props.category.key === 'all' && (
+                <a>
+                  {post.category.charAt(0).toUpperCase() +
+                    post.category.slice(1)}
+                </a>
+              )}
+            </div>
             <Feed.Date>
               <Moment fromNow>{new Date(post.timestamp)}</Moment>
             </Feed.Date>

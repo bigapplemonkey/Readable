@@ -189,6 +189,7 @@ class App extends Component {
                       post={post}
                       handlePostAction={self.openModal.bind(self)}
                       key={post.id}
+                      category={self.state.category}
                       isLeaving={post.id === self.state.deletedPost}
                     />
                   ))}

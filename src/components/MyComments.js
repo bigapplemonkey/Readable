@@ -156,6 +156,7 @@ class MyComments extends Component {
           />
           <Form.TextArea
             placeholder="Tell us what you think..."
+            value={self.state.body}
             onChange={event => self.handleChange(event, 'body')}
           />
           <Form.Group>

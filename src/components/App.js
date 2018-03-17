@@ -154,7 +154,8 @@ class App extends Component {
 
     if (query && query !== '')
       posts = posts.filter(post =>
-        (post.body + post.title + post.author + post.category)
+        [post.body, post.title, post.author, post.category]
+          .join(' ')
           .toLowerCase()
           .includes(query.toLowerCase())
       );

@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux';
-
 import {
   ADD_POST,
   DELETE_POST,
@@ -66,6 +65,7 @@ const confirmationModalState = {
   confirmed: false
 };
 
+// Comment reducer
 function comments(state = initialComments, action) {
   const { id, parentId, timestamp, author, body, type } = action;
   switch (type) {
@@ -109,6 +109,7 @@ function comments(state = initialComments, action) {
   }
 }
 
+// Post reducer
 function posts(state = initialPosts, action) {
   const { id, timestamp, author, category, title, body, type } = action;
   switch (type) {
@@ -152,6 +153,7 @@ function posts(state = initialPosts, action) {
   }
 }
 
+// UI reducer
 function confirmationModal(state = confirmationModalState, action) {
   const { type, id, elementType } = action;
   switch (type) {

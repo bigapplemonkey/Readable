@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 // Components
 import { Transition, Icon } from 'semantic-ui-react';
 
-class Vote extends Component {
+class MyVote extends Component {
   state = { visible: true };
 
   updateCount(isIncrement) {
-    this.props.handleVote(isIncrement);
+    this.props.onVote(isIncrement);
     this.setState({ visible: !this.state.visible });
   }
 
@@ -34,9 +34,9 @@ class Vote extends Component {
   }
 }
 
-Vote.propTypes = {
+MyVote.propTypes = {
   count: PropTypes.number.isRequired,
-  handleVote: PropTypes.func.isRequired
+  onVote: PropTypes.func.isRequired
 };
 
-export default Vote;
+export default MyVote;

@@ -24,6 +24,12 @@ class MySidebar extends Component {
     window.removeEventListener('resize', this.updateWindowDimensions);
   }
 
+  // if active item coming in props from parent
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.item) this.setState({ activeItem: nextProps.item });
+  }
+
+  // handle sidebar visibility according to viewport size
   updateWindowDimensions() {
     const width = window.innerWidth;
     if (width < 731) {
@@ -42,14 +48,10 @@ class MySidebar extends Component {
     this.props.onItemSelect(activeItem);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.item) this.setState({ activeItem: nextProps.item });
-  }
-
   render() {
     const self = this;
 
-    const { sidebarDirection } = self.state;
+    const { sidebarDirection, toggleSideBar, activeItem } = self.state;
     const { menuItems, visible } = self.props;
 
     return (
@@ -57,7 +59,7 @@ class MySidebar extends Component {
         as={Menu}
         animation={sidebarDirection === 'horizontal' ? 'overlay' : 'push'}
         width="thin"
-        visible={self.state.toggleSideBar || visible}
+        visible={toggleSideBar || visible}
         icon="labeled"
         direction={sidebarDirection === 'horizontal' ? 'top' : 'left'}
         vertical={sidebarDirection === 'vertical'}
@@ -67,7 +69,7 @@ class MySidebar extends Component {
           <Menu.Item
             name={item.hey}
             key={item.key}
-            active={item.key === self.state.activeItem}
+            active={item.key === activeItem}
             onClick={() => {
               self.updateActiveItem(item);
             }}
@@ -82,8 +84,10 @@ class MySidebar extends Component {
 }
 
 MySidebar.propTypes = {
-  // comment: PropTypes.object.isRequired,
-  // handleCommentAction: PropTypes.func.isRequired
+  menuItems: PropTypes.array.isRequired,
+  visible: PropTypes.bool.isRequired,
+  onItemSelect: PropTypes.func.isRequired,
+  item: PropTypes.string
 };
 
 export default MySidebar;

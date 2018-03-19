@@ -6,27 +6,23 @@ import { connect } from 'react-redux';
 // Components
 import { Feed, Icon, Dimmer, Loader } from 'semantic-ui-react';
 import MyComments from './MyComments';
-import Vote from './Vote';
+import MyVote from './MyVote';
 // Redux Actions
 import { upVotePost, downVotePost, openConfirmationModal } from '../actions';
+// Helpers
+import { getPhoto, capitalize } from '../utils/helpers';
 
 class MyPost extends Component {
   state = {
     isLoading: true
   };
-  getPhoto(id) {
-    return `https://api.adorable.io/avatars/47/${id}.png`;
-  }
 
+  // remove loader when image loaded
   imageLoaded() {
     this.setState({ isLoading: false });
   }
 
-  componentWillUnmount() {
-    //this.setState({ isLeaving: true });
-    //console.log(this.props.post.author);
-  }
-
+  // handle votes
   handleVote(isUpVote) {
     const { post, upVotePost, downVotePost } = this.props;
     isUpVote ? upVotePost({ id: post.id }) : downVotePost({ id: post.id });
@@ -35,22 +31,32 @@ class MyPost extends Component {
   render() {
     const self = this;
 
-    const { post } = self.props;
+    const {
+      post,
+      category,
+      isLeaving,
+      onPostAction,
+      openConfirmationModal,
+      onCategoryClick
+    } = self.props;
 
-    const hiddenClass = self.props.isLeaving ? ' is-leaving' : '';
+    const { isLoading } = self.state;
+
+    // Dynamic class
+    const hiddenClass = isLeaving ? ' is-leaving' : '';
 
     return (
       <Feed.Event className={hiddenClass}>
-        <Dimmer active={self.props.isLeaving || self.state.isLoading} inverted>
+        <Dimmer active={isLeaving || isLoading} inverted>
           <Loader />
         </Dimmer>
         <div className="feed-actions">
-          <a onClick={() => self.props.handlePostAction('edit', post)}>
+          <a onClick={() => onPostAction('edit', post)}>
             <Icon name="edit" />
           </a>
           <a
             onClick={() =>
-              self.props.openConfirmationModal({
+              openConfirmationModal({
                 elementType: 'post',
                 id: post.id
               })
@@ -63,13 +69,13 @@ class MyPost extends Component {
           children={
             <div>
               <img
-                alt=""
-                src={self.getPhoto(post.author)}
+                alt="User"
+                src={getPhoto(post.author, '47')}
                 onLoad={self.imageLoaded.bind(self)}
               />
-              <Vote
+              <MyVote
                 count={post.voteScore}
-                handleVote={self.handleVote.bind(self)}
+                onVote={self.handleVote.bind(self)}
               />
             </div>
           }
@@ -77,22 +83,20 @@ class MyPost extends Component {
         <Feed.Content>
           <Feed.Summary>
             <div className="poster-name">
-              {post.author} posted{self.props.category.key === 'all' && (
+              {post.author} posted{category.key === 'all' && (
                 <span>
                   {' '}
                   in{' '}
                   <a
                     onClick={() =>
-                      self.props.categoryClick({
+                      onCategoryClick({
                         key: post.category,
-                        value:
-                          post.category.charAt(0).toUpperCase() +
-                          post.category.slice(1)
+                        value: capitalize(post.category)
                       })
                     }
                   >
-                    {post.category.charAt(0).toUpperCase() +
-                      post.category.slice(1)}
+                    {' '}
+                    {capitalize(post.category)}
                   </a>
                 </span>
               )}
@@ -115,8 +119,12 @@ class MyPost extends Component {
 }
 
 MyPost.propTypes = {
-  // comment: PropTypes.object.isRequired,
-  // handleCommentAction: PropTypes.func.isRequired
+  post: PropTypes.object.isRequired,
+  category: PropTypes.object.isRequired,
+  isLeaving: PropTypes.bool.isRequired,
+  onPostAction: PropTypes.func.isRequired,
+  openConfirmationModal: PropTypes.func.isRequired,
+  onCategoryClick: PropTypes.func.isRequired
 };
 
 function mapDispatchToProps(dispatch) {

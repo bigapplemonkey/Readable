@@ -16,6 +16,7 @@ export const CLOSE_CONFIRMATION_MODAL = 'CLOSE_CONFIRMATION_MODAL';
 export const CONFIRM_CONFIRMATION_MODAL = 'CONFIRM_CONFIRMATION_MODAL';
 export const CLEAR_CONFIRMATION_MODAL = 'CLEAR_CONFIRMATION_MODAL';
 
+// Post Actions
 export function addPost({ id, timestamp, author, category, title, body }) {
   return {
     type: ADD_POST,
@@ -58,6 +59,7 @@ export function downVotePost({ id }) {
   };
 }
 
+// Comment Actions
 export function addComment({ id, parentId, timestamp, author, body }) {
   return {
     type: ADD_COMMENT,
@@ -98,6 +100,7 @@ export function downVoteComment({ id }) {
   };
 }
 
+// UI Actions
 export function openConfirmationModal({ elementType, id }) {
   return {
     type: OPEN_CONFIRMATION_MODAL,

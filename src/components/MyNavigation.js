@@ -1,4 +1,7 @@
+// React packages
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+// Components
 import { Dropdown, Icon, Menu, Header, Input } from 'semantic-ui-react';
 
 class MyNavigation extends Component {
@@ -18,10 +21,6 @@ class MyNavigation extends Component {
     ]
   };
 
-  toggleHamburger() {
-    this.props.onHamburgerClick();
-  }
-
   updateActiveItem(activeItem) {
     this.setState({ activeItem: activeItem.key });
     this.props.onSort(activeItem);
@@ -29,7 +28,11 @@ class MyNavigation extends Component {
 
   render() {
     const self = this;
+
     const menuConfig = self.menuConfig;
+
+    const { onHamburgerClick, onSearch } = self.props;
+    const { activeItem } = self.state;
 
     return (
       <div>
@@ -37,7 +40,7 @@ class MyNavigation extends Component {
           <Menu.Item
             name="hamburger"
             className="hamburger-link"
-            onClick={self.toggleHamburger.bind(this)}
+            onClick={onHamburgerClick}
           >
             <Icon name="sidebar" />
           </Menu.Item>
@@ -45,7 +48,12 @@ class MyNavigation extends Component {
             <Icon name="pin" />
             <Header.Content>
               {menuConfig.projectName}
-              <Header.Subheader>By {menuConfig.author}</Header.Subheader>
+              <Header.Subheader>
+                By{' '}
+                <a className="author-link" href={menuConfig.link}>
+                  {menuConfig.author}
+                </a>
+              </Header.Subheader>
             </Header.Content>
           </Header>
           <Menu.Menu position="right">
@@ -54,7 +62,7 @@ class MyNavigation extends Component {
                 {menuConfig.dropdownItems.map(item => (
                   <Dropdown.Item
                     key={item.key}
-                    active={item.key === self.state.activeItem}
+                    active={item.key === activeItem}
                     onClick={() => {
                       self.updateActiveItem(item);
                     }}
@@ -69,9 +77,7 @@ class MyNavigation extends Component {
               <Input
                 icon={{ name: 'search', circular: true, link: false }}
                 placeholder="Search..."
-                onKeyUp={event =>
-                  self.props.onSearch(event.target.value.trim())
-                }
+                onKeyUp={event => onSearch(event.target.value.trim())}
               />
               <div className="results" />
             </div>
@@ -81,5 +87,11 @@ class MyNavigation extends Component {
     );
   }
 }
+
+MyNavigation.propTypes = {
+  onHamburgerClick: PropTypes.func.isRequired,
+  onSearch: PropTypes.func.isRequired,
+  onSort: PropTypes.func.isRequired
+};
 
 export default MyNavigation;

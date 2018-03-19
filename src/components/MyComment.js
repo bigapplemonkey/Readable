@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Moment from 'react-moment';
 import { connect } from 'react-redux';
 // Components
-import Vote from './Vote';
+import MyVote from './MyVote';
 import {
   Comment,
   Form,
@@ -88,10 +88,7 @@ class MyComment extends Component {
         <Dimmer active={isLeaving || self.state.isLoading} inverted>
           <Loader />
         </Dimmer>
-        <Vote
-          count={comment.voteScore}
-          handleVote={self.handleVote.bind(self)}
-        />
+        <MyVote count={comment.voteScore} onVote={self.handleVote.bind(self)} />
         <Comment.Avatar
           src={self.getPhoto(comment.author)}
           onLoad={self.imageLoaded.bind(self)}

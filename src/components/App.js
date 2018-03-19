@@ -236,10 +236,10 @@ class App extends Component {
                   {posts.map(post => (
                     <MyPost
                       post={post}
-                      handlePostAction={self.openModal.bind(self)}
+                      onPostAction={self.openModal.bind(self)}
                       key={post.id}
                       category={self.state.category}
-                      categoryClick={category =>
+                      onCategoryClick={category =>
                         self.updateState.bind(self)('category', category)
                       }
                       isLeaving={
@@ -253,12 +253,12 @@ class App extends Component {
             </Transition>
           </Segment>
           <MyConfirmationModal
-            visible={self.props.showConfirmationModal}
+            isVisible={self.props.showConfirmationModal}
             type={self.props.confirmationModalType}
             onAction={self.closeConfirmationModal.bind(self)}
           />
           <MyEditModal
-            visible={self.state.modalOpen2}
+            isVisible={self.state.modalOpen2}
             onClose={() => self.setState({ modalOpen2: false, item: {} })}
             onAction={self.handleModalAction.bind(self)}
             item={self.state.item}

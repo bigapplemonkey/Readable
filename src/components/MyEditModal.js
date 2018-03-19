@@ -13,6 +13,7 @@ class MyEditModal extends Component {
     isProcessing: false
   };
 
+  // update state based on inputs
   handleChange(event, attribute) {
     this.setState({
       [attribute]:
@@ -22,21 +23,25 @@ class MyEditModal extends Component {
     });
   }
 
+  // if receiving initial form values in props
   componentWillReceiveProps(nextProps) {
     const { item } = nextProps;
-    this.setState({
-      author: item ? item.author : '',
-      title: item ? item.title : '',
-      category: item ? item.category : '',
-      body: item ? item.body : ''
-    });
+    if (item)
+      this.setState({
+        author: item ? item.author : '',
+        title: item ? item.title : '',
+        category: item ? item.category : '',
+        body: item ? item.body : ''
+      });
   }
 
-  onSubmit() {
+  handleSubmit() {
     this.setState({ isProcessing: true }, () => {
       const { item, isEdit } = this.props;
-      const action = isEdit ? 'update' : 'create';
       const { author, title, category, body } = this.state;
+
+      const action = isEdit ? 'update' : 'create';
+
       setTimeout(() => {
         this.props.onAction(action, { ...item, author, title, category, body });
         this.setState({ isProcessing: false });
@@ -47,14 +52,14 @@ class MyEditModal extends Component {
   render() {
     const self = this;
 
-    const { categoryItems, item } = self.props;
+    const { categoryItems, item, isEdit, isVisible, onClose } = self.props;
     const { author, body, category, title } = self.state;
 
-    const modalType = self.props.isEdit ? 'Edit' : 'Create';
-    const buttonTitle = self.props.isEdit ? 'Update' : 'Create';
+    const modalType = isEdit ? 'Edit' : 'Create';
+    const buttonTitle = isEdit ? 'Update' : 'Create';
+    const hiddenClass = isEdit ? ' is-hidden' : '';
 
-    const hiddenClass = self.props.isEdit ? ' is-hidden' : '';
-
+    // enabled button only when all values present
     const isEnabled =
       author &&
       author.length > 0 &&
@@ -64,7 +69,7 @@ class MyEditModal extends Component {
 
     return (
       <Transition
-        visible={self.props.visible}
+        visible={isVisible}
         animation="fade down"
         unmountOnHide={true}
         duration={350}
@@ -73,7 +78,7 @@ class MyEditModal extends Component {
           className="view"
           dimmer="inverted"
           open={true}
-          onClose={self.props.onClose}
+          onClose={onClose}
           closeOnDimmerClick={false}
           closeIcon={true}
         >
@@ -119,12 +124,12 @@ class MyEditModal extends Component {
                 rows="5"
               />
               <Form.Group>
-                <Button basic color="grey" onClick={() => self.props.onClose()}>
+                <Button basic color="grey" onClick={onClose}>
                   Cancel
                 </Button>
                 <Form.Button
                   color="green"
-                  onClick={self.onSubmit.bind(self)}
+                  onClick={self.handleSubmit.bind(self)}
                   disabled={!isEnabled}
                 >
                   <Icon name="pin" />
@@ -140,8 +145,12 @@ class MyEditModal extends Component {
 }
 
 MyEditModal.propTypes = {
-  // comment: PropTypes.object.isRequired,
-  // handleCommentAction: PropTypes.func.isRequired
+  categoryItems: PropTypes.array.isRequired,
+  item: PropTypes.object,
+  isEdit: PropTypes.bool.isRequired,
+  isVisible: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onAction: PropTypes.func.isRequired
 };
 
 export default MyEditModal;

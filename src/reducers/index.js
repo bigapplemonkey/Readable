@@ -10,7 +10,11 @@ import {
   DELETE_COMMENT,
   UPDATE_COMMENT,
   UP_VOTE_COMMENT,
-  DOWN_VOTE_COMMENT
+  DOWN_VOTE_COMMENT,
+  OPEN_CONFIRMATION_MODAL,
+  CLOSE_CONFIRMATION_MODAL,
+  CONFIRM_CONFIRMATION_MODAL,
+  CLEAR_CONFIRMATION_MODAL
 } from '../actions';
 
 const initialPosts = {
@@ -55,9 +59,16 @@ const initialComments = {
   }
 };
 
+const confirmationModalState = {
+  show: false,
+  elementType: '',
+  id: '',
+  confirmed: false
+};
+
 function comments(state = initialComments, action) {
-  const { id, parentId, timestamp, author, body } = action;
-  switch (action.type) {
+  const { id, parentId, timestamp, author, body, type } = action;
+  switch (type) {
     case ADD_COMMENT:
       return {
         ...state,
@@ -99,8 +110,8 @@ function comments(state = initialComments, action) {
 }
 
 function posts(state = initialPosts, action) {
-  const { id, timestamp, author, category, title, body } = action;
-  switch (action.type) {
+  const { id, timestamp, author, category, title, body, type } = action;
+  switch (type) {
     case ADD_POST:
       return {
         ...state,
@@ -141,7 +152,40 @@ function posts(state = initialPosts, action) {
   }
 }
 
+function confirmationModal(state = confirmationModalState, action) {
+  const { type, id, elementType } = action;
+  switch (type) {
+    case OPEN_CONFIRMATION_MODAL:
+      return {
+        ...state,
+        elementType,
+        id,
+        show: true
+      };
+    case CLOSE_CONFIRMATION_MODAL:
+      return {
+        ...state,
+        show: false
+      };
+    case CONFIRM_CONFIRMATION_MODAL:
+      return {
+        ...state,
+        confirmed: true
+      };
+    case CLEAR_CONFIRMATION_MODAL:
+      return {
+        ...state,
+        confirmed: false,
+        elementType: '',
+        id: ''
+      };
+    default:
+      return state;
+  }
+}
+
 export default combineReducers({
   comments,
-  posts
+  posts,
+  confirmationModal
 });

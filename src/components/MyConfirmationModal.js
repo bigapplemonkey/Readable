@@ -13,7 +13,7 @@ const MyConfirmationModal = props => {
       visible={props.visible}
       animation="fade down"
       unmountOnHide={true}
-      duration={350}
+      duration={{ hide: 350, show: 250 }}
     >
       <Modal open={true} basic size="small" style={{ marginTop: '30vh' }}>
         <Header icon="trash" content={modalHeader} />

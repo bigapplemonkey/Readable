@@ -8,7 +8,7 @@ import { Feed, Icon, Dimmer, Loader } from 'semantic-ui-react';
 import MyComments from './MyComments';
 import Vote from './Vote';
 // Redux Actions
-import { upVotePost, downVotePost } from '../actions';
+import { upVotePost, downVotePost, openConfirmationModal } from '../actions';
 
 class MyPost extends Component {
   state = {
@@ -19,7 +19,7 @@ class MyPost extends Component {
   }
 
   componentWillUnmount() {
-    this.setState({ isLeaving: true });
+    //this.setState({ isLeaving: true });
     //console.log(this.props.post.author);
   }
 
@@ -44,7 +44,14 @@ class MyPost extends Component {
           <a onClick={() => self.props.handlePostAction('edit', post)}>
             <Icon name="edit" />
           </a>
-          <a onClick={() => self.props.handlePostAction('delete', post)}>
+          <a
+            onClick={() =>
+              self.props.openConfirmationModal({
+                elementType: 'post',
+                id: post.id
+              })
+            }
+          >
             <Icon name="delete" />
           </a>
         </div>
@@ -107,7 +114,8 @@ MyPost.propTypes = {
 function mapDispatchToProps(dispatch) {
   return {
     upVotePost: data => dispatch(upVotePost(data)),
-    downVotePost: data => dispatch(downVotePost(data))
+    downVotePost: data => dispatch(downVotePost(data)),
+    openConfirmationModal: data => dispatch(openConfirmationModal(data))
   };
 }
 

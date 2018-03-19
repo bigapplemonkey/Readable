@@ -21,7 +21,15 @@ import {
   Loader
 } from 'semantic-ui-react';
 // Redux Actions
-import { addPost, updatePost, deletePost } from '../actions';
+import {
+  addPost,
+  updatePost,
+  deletePost,
+  deleteComment,
+  closeConfirmationModal,
+  confirmConfirmationModal,
+  clearConfirmationModal
+} from '../actions';
 
 const menuItems = [
   { key: 'all', value: 'All', icon: 'home' },
@@ -36,22 +44,18 @@ class App extends Component {
     this.state = {
       isAppReady: false,
       toggleSideBar: false,
-      modalOpen: false,
-      modalType: '',
       modalOpen2: false,
       item: {},
       isEdit: false,
       sortBy: { key: 'date', value: 'Date', icon: 'sort content ascending' },
       category: { key: 'all', value: 'All', icon: 'home' },
       isFeedVisible: false,
-      deletedPost: '',
       query: '',
       isProcessing: false
     };
   }
 
   componentDidMount() {
-    console.log(this.props);
     this.setState({ isAppReady: true, isFeedVisible: true });
   }
 
@@ -67,12 +71,21 @@ class App extends Component {
   }
 
   closeConfirmationModal(toDelete) {
-    this.setState({ modalOpen: false, modalType: '' });
+    const { confirmationModalType } = this.props;
+    this.props.closeConfirmationModal();
+
     if (toDelete) {
-      const { id } = this.state.item;
-      this.setState({ deletedPost: id }, () => {
-        setTimeout(() => this.props.deletePost({ id }), 800);
-      });
+      const { confirmationModalElement } = this.props;
+      this.props.confirmConfirmationModal();
+
+      setTimeout(() => {
+        if (confirmationModalType === 'post')
+          this.props.deletePost({ id: confirmationModalElement });
+        else if (confirmationModalType === 'comment')
+          this.props.deleteComment({ id: confirmationModalElement });
+        this.props.deleteComment({ id: confirmationModalElement });
+        this.props.clearConfirmationModal();
+      }, 900);
     }
   }
 
@@ -87,9 +100,6 @@ class App extends Component {
   }
 
   handleModalAction(action, item) {
-    console.log(action);
-    console.log(item);
-
     const { title, body } = item;
 
     action === 'create'
@@ -232,7 +242,10 @@ class App extends Component {
                       categoryClick={category =>
                         self.updateState.bind(self)('category', category)
                       }
-                      isLeaving={post.id === self.state.deletedPost}
+                      isLeaving={
+                        post.id === self.props.confirmationModalElement &&
+                        self.props.confirmed
+                      }
                     />
                   ))}
                 </Feed>
@@ -240,8 +253,8 @@ class App extends Component {
             </Transition>
           </Segment>
           <MyConfirmationModal
-            visible={self.state.modalOpen}
-            type={self.state.modalType}
+            visible={self.props.showConfirmationModal}
+            type={self.props.confirmationModalType}
             onAction={self.closeConfirmationModal.bind(self)}
           />
           <MyEditModal
@@ -258,19 +271,29 @@ class App extends Component {
   }
 }
 
-function mapStateToProps({ posts }) {
+function mapStateToProps({ posts, confirmationModal }) {
   const formattedPosts = Object.keys(posts).map(key => ({
     ...posts[key],
     id: key
   }));
-  return { posts: formattedPosts };
+  return {
+    posts: formattedPosts,
+    showConfirmationModal: confirmationModal.show,
+    confirmationModalType: confirmationModal.elementType,
+    confirmationModalElement: confirmationModal.id,
+    confirmed: confirmationModal.confirmed
+  };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     addPost: data => dispatch(addPost(data)),
     updatePost: data => dispatch(updatePost(data)),
-    deletePost: data => dispatch(deletePost(data))
+    deletePost: data => dispatch(deletePost(data)),
+    deleteComment: data => dispatch(deleteComment(data)),
+    closeConfirmationModal: () => dispatch(closeConfirmationModal()),
+    confirmConfirmationModal: () => dispatch(confirmConfirmationModal()),
+    clearConfirmationModal: () => dispatch(clearConfirmationModal())
   };
 }
 

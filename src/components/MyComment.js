@@ -5,9 +5,22 @@ import Moment from 'react-moment';
 import { connect } from 'react-redux';
 // Components
 import Vote from './Vote';
-import { Comment, Form, TextArea, Button, Icon } from 'semantic-ui-react';
+import {
+  Comment,
+  Form,
+  TextArea,
+  Button,
+  Icon,
+  Dimmer,
+  Loader
+} from 'semantic-ui-react';
 // Redux Actions
-import { upVoteComment, downVoteComment, updateComment } from '../actions';
+import {
+  upVoteComment,
+  downVoteComment,
+  updateComment,
+  openConfirmationModal
+} from '../actions';
 
 class MyComment extends Component {
   state = {
@@ -59,8 +72,17 @@ class MyComment extends Component {
 
     const showCommentForm = self.state.editable ? ' is-visible' : '';
 
+    const isLeaving =
+      comment.id === self.props.confirmationModalElement &&
+      self.props.confirmed;
+
+    const hiddenClass = isLeaving ? ' is-leaving' : '';
+
     return (
-      <Comment>
+      <Comment className={`my-comment${hiddenClass}`}>
+        <Dimmer active={isLeaving} inverted>
+          <Loader />
+        </Dimmer>
         <Vote
           count={comment.voteScore}
           handleVote={self.handleVote.bind(self)}
@@ -108,7 +130,12 @@ class MyComment extends Component {
             />
             <Comment.Action
               children={<Icon name="delete" />}
-              onClick={() => self.props.handleCommentAction('delete', comment)}
+              onClick={() =>
+                self.props.openConfirmationModal({
+                  elementType: 'comment',
+                  id: comment.id
+                })
+              }
             />
           </Comment.Actions>
         </Comment.Content>
@@ -122,12 +149,20 @@ MyComment.propTypes = {
   handleCommentAction: PropTypes.func.isRequired
 };
 
+function mapStateToProps({ confirmationModal }) {
+  return {
+    confirmationModalElement: confirmationModal.id,
+    confirmed: confirmationModal.confirmed
+  };
+}
+
 function mapDispatchToProps(dispatch) {
   return {
     upVoteComment: data => dispatch(upVoteComment(data)),
     downVoteComment: data => dispatch(downVoteComment(data)),
-    updateComment: data => dispatch(updateComment(data))
+    updateComment: data => dispatch(updateComment(data)),
+    openConfirmationModal: data => dispatch(openConfirmationModal(data))
   };
 }
 
-export default connect(null, mapDispatchToProps)(MyComment);
+export default connect(mapStateToProps, mapDispatchToProps)(MyComment);

@@ -26,11 +26,16 @@ class MyComment extends Component {
   state = {
     editable: false,
     isProcessing: false,
+    isLoading: true,
     body: ''
   };
 
   getPhoto(id) {
     return `https://api.adorable.io/avatars/35/${id}.png`;
+  }
+
+  imageLoaded() {
+    this.setState({ isLoading: false });
   }
 
   toggleEditMode(comment) {
@@ -80,14 +85,17 @@ class MyComment extends Component {
 
     return (
       <Comment className={`my-comment${hiddenClass}`}>
-        <Dimmer active={isLeaving} inverted>
+        <Dimmer active={isLeaving || self.state.isLoading} inverted>
           <Loader />
         </Dimmer>
         <Vote
           count={comment.voteScore}
           handleVote={self.handleVote.bind(self)}
         />
-        <Comment.Avatar src={self.getPhoto(comment.author)} />
+        <Comment.Avatar
+          src={self.getPhoto(comment.author)}
+          onLoad={self.imageLoaded.bind(self)}
+        />
         <Comment.Content className={showCommentForm}>
           <Comment.Author as="a">{comment.author}</Comment.Author>
           <Comment.Metadata>

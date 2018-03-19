@@ -12,10 +12,14 @@ import { upVotePost, downVotePost, openConfirmationModal } from '../actions';
 
 class MyPost extends Component {
   state = {
-    //isLeaving: false
+    isLoading: true
   };
   getPhoto(id) {
     return `https://api.adorable.io/avatars/47/${id}.png`;
+  }
+
+  imageLoaded() {
+    this.setState({ isLoading: false });
   }
 
   componentWillUnmount() {
@@ -37,7 +41,7 @@ class MyPost extends Component {
 
     return (
       <Feed.Event className={hiddenClass}>
-        <Dimmer active={self.props.isLeaving} inverted>
+        <Dimmer active={self.props.isLeaving || self.state.isLoading} inverted>
           <Loader />
         </Dimmer>
         <div className="feed-actions">
@@ -58,7 +62,11 @@ class MyPost extends Component {
         <Feed.Label
           children={
             <div>
-              <img alt="" src={self.getPhoto(post.author)} />
+              <img
+                alt=""
+                src={self.getPhoto(post.author)}
+                onLoad={self.imageLoaded.bind(self)}
+              />
               <Vote
                 count={post.voteScore}
                 handleVote={self.handleVote.bind(self)}

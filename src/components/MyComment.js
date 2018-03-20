@@ -25,12 +25,19 @@ import {
 import { getPhoto } from '../utils/helpers';
 
 class MyComment extends Component {
-  state = {
-    isEditable: false,
-    isProcessing: false,
-    isLoading: true,
-    body: ''
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      isEditable: false,
+      isProcessing: false,
+      isLoading: true,
+      body: ''
+    };
+
+    this.handleVote = this.handleVote.bind(this);
+    this.handleImageLoaded = this.handleImageLoaded.bind(this);
+    this.handleUpdate = this.handleUpdate.bind(this);
+  }
 
   // remmove loader when image is ready
   handleImageLoaded() {
@@ -67,6 +74,10 @@ class MyComment extends Component {
     } else this.setState({ isEditable: false });
   }
 
+  handleChange(event) {
+    this.setState({ body: event.target.value });
+  }
+
   render() {
     const self = this;
 
@@ -89,10 +100,10 @@ class MyComment extends Component {
         <Dimmer active={isLeaving || isLoading} inverted>
           <Loader />
         </Dimmer>
-        <MyVote count={comment.voteScore} onVote={self.handleVote.bind(self)} />
+        <MyVote count={comment.voteScore} onVote={self.handleVote} />
         <Comment.Avatar
           src={getPhoto(comment.author, '35')}
-          onLoad={self.handleImageLoaded.bind(self)}
+          onLoad={self.handleImageLoaded}
         />
         <Comment.Content className={showCommentForm}>
           <Comment.Author as="span">{comment.author}</Comment.Author>
@@ -107,7 +118,7 @@ class MyComment extends Component {
               <TextArea
                 value={body}
                 rows="2"
-                onChange={event => self.setState({ body: event.target.value })}
+                onChange={event => self.handleChange(event)}
               />
             </Form.Field>
             <Form.Group>
@@ -121,7 +132,7 @@ class MyComment extends Component {
               <Form.Button
                 color="green"
                 size="mini"
-                onClick={self.handleUpdate.bind(self)}
+                onClick={self.handleUpdate}
                 disabled={body === ''}
               >
                 <Icon name="comment outline" />Update

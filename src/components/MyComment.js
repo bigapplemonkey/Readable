@@ -21,28 +21,27 @@ import {
   updateComment,
   openConfirmationModal
 } from '../actions';
+// Helpers
+import { getPhoto } from '../utils/helpers';
 
 class MyComment extends Component {
   state = {
-    editable: false,
+    isEditable: false,
     isProcessing: false,
     isLoading: true,
     body: ''
   };
 
-  getPhoto(id) {
-    return `https://api.adorable.io/avatars/35/${id}.png`;
-  }
-
-  imageLoaded() {
+  // remmove loader when image is ready
+  handleImageLoaded() {
     this.setState({ isLoading: false });
   }
 
-  toggleEditMode(comment) {
-    const editMode = !this.state.editable;
+  handleToggleEditMode(comment) {
+    const editMode = !this.state.isEditable;
     editMode
-      ? this.setState({ editable: editMode, body: this.props.comment.body })
-      : this.setState({ editable: editMode });
+      ? this.setState({ isEditable: editMode, body: this.props.comment.body })
+      : this.setState({ isEditable: editMode });
   }
 
   handleVote(isUpVote) {
@@ -52,59 +51,61 @@ class MyComment extends Component {
       : downVoteComment({ id: comment.id });
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({ body: nextProps.comment.body });
-  }
-
   handleUpdate() {
-    const comment = this.props.comment;
+    const { comment } = this.props;
+
+    // prevent update if no changes
     if (comment.body !== this.state.body) {
       this.setState({ isProcessing: true }, () => {
         setTimeout(() => {
           this.props.updateComment({ id: comment.id, body: this.state.body });
-          this.setState({ editable: false }, () =>
+          this.setState({ isEditable: false }, () =>
             this.setState({ isProcessing: false })
           );
-        }, 400);
+        }, 400); // small delay to display loader
       });
-    } else this.setState({ editable: false });
+    } else this.setState({ isEditable: false });
   }
 
   render() {
     const self = this;
 
-    const comment = self.props.comment;
+    const {
+      comment,
+      confirmationModalElement,
+      confirmed,
+      openConfirmationModal
+    } = self.props;
+    const { body, isEditable, isLoading, isProcessing } = self.state;
 
-    const showCommentForm = self.state.editable ? ' is-visible' : '';
+    const showCommentForm = isEditable ? ' is-visible' : '';
 
-    const isLeaving =
-      comment.id === self.props.confirmationModalElement &&
-      self.props.confirmed;
+    const isLeaving = comment.id === confirmationModalElement && confirmed;
 
     const hiddenClass = isLeaving ? ' is-leaving' : '';
 
     return (
       <Comment className={`my-comment${hiddenClass}`}>
-        <Dimmer active={isLeaving || self.state.isLoading} inverted>
+        <Dimmer active={isLeaving || isLoading} inverted>
           <Loader />
         </Dimmer>
         <MyVote count={comment.voteScore} onVote={self.handleVote.bind(self)} />
         <Comment.Avatar
-          src={self.getPhoto(comment.author)}
-          onLoad={self.imageLoaded.bind(self)}
+          src={getPhoto(comment.author, '35')}
+          onLoad={self.handleImageLoaded.bind(self)}
         />
         <Comment.Content className={showCommentForm}>
-          <Comment.Author as="a">{comment.author}</Comment.Author>
+          <Comment.Author as="span">{comment.author}</Comment.Author>
           <Comment.Metadata>
             <div>
               <Moment fromNow>{new Date(comment.timestamp)}</Moment>
             </div>
           </Comment.Metadata>
           <Comment.Text>{comment.body}</Comment.Text>
-          <Form loading={self.state.isProcessing}>
+          <Form loading={isProcessing}>
             <Form.Field>
               <TextArea
-                value={self.state.body}
+                value={body}
                 rows="2"
                 onChange={event => self.setState({ body: event.target.value })}
               />
@@ -114,15 +115,14 @@ class MyComment extends Component {
                 basic
                 color="grey"
                 size="tiny"
-                loading={false}
                 content="Cancel"
-                onClick={() => self.toggleEditMode(comment)}
+                onClick={() => self.handleToggleEditMode(comment)}
               />
               <Form.Button
                 color="green"
                 size="mini"
-                loading={false}
                 onClick={self.handleUpdate.bind(self)}
+                disabled={body === ''}
               >
                 <Icon name="comment outline" />Update
               </Form.Button>
@@ -131,12 +131,12 @@ class MyComment extends Component {
           <Comment.Actions>
             <Comment.Action
               children={<Icon name="edit" />}
-              onClick={() => self.toggleEditMode(comment)}
+              onClick={() => self.handleToggleEditMode(comment)}
             />
             <Comment.Action
               children={<Icon name="delete" />}
               onClick={() =>
-                self.props.openConfirmationModal({
+                openConfirmationModal({
                   elementType: 'comment',
                   id: comment.id
                 })

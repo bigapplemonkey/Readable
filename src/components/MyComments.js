@@ -5,7 +5,10 @@ import { connect } from 'react-redux';
 // Components
 import MyComment from './MyComment';
 import { Comment, Form, Icon, Header, Button } from 'semantic-ui-react';
+// Actions
 import { addComment } from '../actions';
+// Helpers
+import { guid, sortBy } from '../utils/helpers';
 
 class MyComments extends Component {
   constructor(props) {
@@ -18,94 +21,37 @@ class MyComments extends Component {
       body: ''
     };
     this.toggle = this.toggle.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  // comments = [
-  //   {
-  //     author: 'Matt',
-  //     date: 'Today at 5:42PM',
-  //     body: `How artistic!`,
-  //     count: 5
-  //   },
-  //   {
-  //     author: 'Elliot Fu',
-  //     date: 'Yesterday at 12:30AM',
-  //     body: `This has been very useful for my research. Thanks as
-  //             well! This has been very useful for my research.
-  //             Thanks as well! This has been very useful for my
-  //             research. Thanks as well!`,
-  //     count: 3
-  //   },
-  //   {
-  //     author: 'Joe Henderson',
-  //     date: '5 days ago',
-  //     body: `Dude, this is awesome. Thanks so much`,
-  //     count: -10
-  //   }
-  // ];
-
-  // componentDidMount() {
-  //   this.getComments(this.props.post, comments => {
-  //     // console.log(comments);
-  //     this.setState({ comments });
-  //   });
-  // }
-
-  // getComments(postID, callback) {
-  //   fetch(`http://localhost:3001/posts/${postID}/comments`, {
-  //     headers: { Authorization: 'monkey' }
-  //   }).then(response => response.json().then(data => callback(data)));
-  // }
-
+  // togle comment form, toggle more comments
   toggle(attribute) {
     const isShown = !this.state[attribute];
-    if (attribute === 'showForm') {
-      isShown
-        ? this.setState({
-            [attribute]: isShown,
-            author: '',
-            body: ''
-          })
-        : this.setState({ [attribute]: isShown });
+
+    if (attribute === 'showForm' && isShown) {
+      this.setState({
+        [attribute]: isShown,
+        author: '',
+        body: ''
+      });
     } else this.setState({ [attribute]: isShown });
   }
 
+  // update state based on inputs
   handleChange(event, attribute) {
     this.setState({ [attribute]: event.target.value });
   }
 
-  guid() {
-    function s4() {
-      return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1);
-    }
-    return (
-      s4() +
-      s4() +
-      '-' +
-      s4() +
-      '-' +
-      s4() +
-      '-' +
-      s4() +
-      '-' +
-      s4() +
-      s4() +
-      s4()
-    );
-  }
-
-  onSubmit() {
-    console.log('here');
+  handleSubmit() {
     this.setState({ isProcessing: true }, () => {
-      console.log(this.props.post);
       const { body, author } = this.state;
+      const { postId } = this.props;
+
       setTimeout(() => {
         this.props.addComment({
           timestamp: Date.now(),
-          id: this.guid(),
-          parentId: this.props.post,
+          id: guid(),
+          parentId: postId,
           body,
           author
         });
@@ -115,48 +61,44 @@ class MyComments extends Component {
           isProcessing: false,
           showForm: false
         });
-      }, 200);
+      }, 200); // small delay to display loader
     });
   }
 
   render() {
     const self = this;
 
-    const { author, body } = self.state;
+    const { author, body, showForm, showComments, isProcessing } = self.state;
     let { comments } = self.props;
 
     const isEnabled = author.length > 0 && body.length > 0;
 
     // Dynamic classes
-    const showCommentForm = self.state.showForm ? ' is-visible' : '';
-    const showMoreComments = self.state.showComments ? ' is-visible' : '';
+    const showCommentForm = showForm ? ' is-visible' : '';
+    const showMoreComments = showComments ? ' is-visible' : '';
 
     // Commnet message
     const commentMessage = `${
       comments.length > 0 ? comments.length : 'No '
     } Comment${comments.length === 1 ? '' : 's'}`;
 
-    comments = comments.sort((x, y) => y.timestamp - x.timestamp);
+    comments = sortBy(comments);
 
     return (
       <Comment.Group>
         <a className="add-comment" onClick={() => self.toggle('showForm')}>
           <Icon name="comment outline" /> Comment
         </a>
-        <Form
-          loading={self.state.isProcessing}
-          className={showCommentForm}
-          reply
-        >
+        <Form loading={isProcessing} className={showCommentForm} reply>
           <Form.Input
             fluid
             placeholder="Name"
-            value={self.state.author}
+            value={author}
             onChange={event => self.handleChange(event, 'author')}
           />
           <Form.TextArea
             placeholder="Tell us what you think..."
-            value={self.state.body}
+            value={body}
             onChange={event => self.handleChange(event, 'body')}
           />
           <Form.Group>
@@ -164,16 +106,14 @@ class MyComments extends Component {
               basic
               color="grey"
               size="tiny"
-              loading={false}
               content="Cancel"
               onClick={() => self.toggle('showForm')}
             />
             <Form.Button
               color="green"
               size="tiny"
-              loading={false}
               disabled={!isEnabled}
-              onClick={self.onSubmit.bind(self)}
+              onClick={self.handleSubmit}
             >
               <Icon name="comment outline" />Add Comment
             </Form.Button>
@@ -183,13 +123,13 @@ class MyComments extends Component {
           {commentMessage}
           {comments.length > 1 && (
             <a className="more" onClick={() => self.toggle('showComments')}>
-              ...{self.state.showComments ? 'less' : 'more'}
+              ...{showComments ? 'less' : 'more'}
             </a>
           )}
         </Header>
         {comments.length > 0 && (
           <MyComment
-            key={comments[0].author}
+            key={comments[0].id}
             comment={comments[0]}
             handleCommentAction={console.log}
           />
@@ -200,7 +140,7 @@ class MyComments extends Component {
               .slice(1)
               .map(comment => (
                 <MyComment
-                  key={comment.author}
+                  key={comment.id}
                   comment={comment}
                   handleCommentAction={console.log}
                 />
@@ -212,18 +152,21 @@ class MyComments extends Component {
   }
 }
 
-MyComments.propTypes = {};
+MyComments.propTypes = {
+  postId: PropTypes.string.isRequired,
+  addComment: PropTypes.func.isRequired,
+  comments: PropTypes.array.isRequired
+};
 
 function mapStateToProps({ comments }, myProps) {
   let formattedComments = [];
   Object.keys(comments).forEach(key => {
-    if (comments[key].parentId === myProps.post)
+    if (comments[key].parentId === myProps.postId)
       formattedComments.push({
         ...comments[key],
         id: key
       });
   });
-
   return { comments: formattedComments };
 }
 

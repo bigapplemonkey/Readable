@@ -106,12 +106,10 @@ class MyPost extends Component {
             </Feed.Date>
           </Feed.Summary>
           <Feed.Extra text>
-            <a>
-              <h3>{post.title}</h3>
-            </a>
+            <h3 className="post-title">{post.title}</h3>
             {post.body}
           </Feed.Extra>
-          <MyComments post={post.id} />
+          <MyComments postId={post.id} />
         </Feed.Content>
       </Feed.Event>
     );

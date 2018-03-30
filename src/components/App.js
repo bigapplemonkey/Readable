@@ -1,6 +1,7 @@
 // React packages
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 // Styles
 import '../semantic/dist/semantic.min.css';
 import '../Custom.css';
@@ -30,7 +31,10 @@ import {
   confirmConfirmationModal,
   clearConfirmationModal
 } from '../actions';
+// Helpers
+import { guid, sortBy } from '../utils/helpers';
 
+// TODO: Remove, retrieve from API
 const menuItems = [
   { key: 'all', value: 'All', icon: 'home' },
   { key: 'react', value: 'React', icon: 'react' },
@@ -43,31 +47,39 @@ class App extends Component {
     super(props);
     this.state = {
       isAppReady: false,
-      toggleSideBar: false,
-      modalOpen2: false,
-      item: {},
-      isEdit: false,
-      sortBy: { key: 'date', value: 'Date', icon: 'sort content ascending' },
-      category: { key: 'all', value: 'All', icon: 'home' },
+      isSideBarVisible: false,
+      isCreateModalOpen: false,
+      isCreateModalEdit: false,
       isFeedVisible: false,
-      query: '',
-      isProcessing: false
+      isProcessing: false,
+      actionItem: {},
+      sortedBy: { key: 'date', value: 'Date', icon: 'sort content ascending' },
+      category: { key: 'all', value: 'All', icon: 'home' },
+      query: ''
     };
+    this.handleHamburgerClick = this.handleHamburgerClick.bind(this);
+    this.openCreateModal = this.openCreateModal.bind(this);
+    this.closeConfirmationModal = this.closeConfirmationModal.bind(this);
+    this.updateState = this.updateState.bind(this);
+    this.handleModalAction = this.handleModalAction.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
   }
 
+  // when app is ready
   componentDidMount() {
     this.setState({ isAppReady: true, isFeedVisible: true });
   }
 
-  onClick() {
-    this.setState({ toggleSideBar: !this.state.toggleSideBar });
+  handleHamburgerClick() {
+    this.setState({ isSideBarVisible: !this.state.isSideBarVisible });
   }
 
-  openModal(action, item) {
-    if (action === 'delete')
-      this.setState({ modalOpen: true, modalType: 'post', item });
-    else if (action === 'edit')
-      this.setState({ modalOpen2: true, item, isEdit: true });
+  openCreateModal(actionItem = {}, isCreateModalEdit) {
+    this.setState({
+      isCreateModalOpen: true,
+      actionItem,
+      isCreateModalEdit
+    });
   }
 
   closeConfirmationModal(toDelete) {
@@ -83,15 +95,15 @@ class App extends Component {
           this.props.deletePost({ id: confirmationModalElement });
         else if (confirmationModalType === 'comment')
           this.props.deleteComment({ id: confirmationModalElement });
-        this.props.deleteComment({ id: confirmationModalElement });
         this.props.clearConfirmationModal();
       }, 900);
     }
   }
 
+  // handle state updates
   updateState(attribute, value) {
     if (attribute === 'category' && value.key !== this.state.category.key) {
-      this.setState({ toggleSideBar: false, isFeedVisible: false }, () => {
+      this.setState({ isSideBarVisible: false, isFeedVisible: false }, () => {
         this.setState({ [attribute]: value }, () => {
           this.setState({ isFeedVisible: true });
         });
@@ -99,26 +111,25 @@ class App extends Component {
     } else this.setState({ [attribute]: value });
   }
 
-  handleModalAction(action, item) {
-    const { title, body } = item;
+  handleModalAction(action, actionItem) {
+    const { title, body } = actionItem;
 
     action === 'create'
       ? this.props.addPost({
-          ...item,
-          id: this.guid(),
+          ...actionItem,
+          id: guid(),
           timestamp: Date.now()
         })
       : this.props.updatePost({
-          ...item,
+          ...actionItem,
           title,
           body
         });
 
-    this.setState({ modalOpen2: false, item: {} });
+    this.setState({ isCreateModalOpen: false, actionItem: {} });
   }
 
   handleSearch(query) {
-    console.log(query);
     this.setState({ isProcessing: true }, () => {
       setTimeout(
         () =>
@@ -130,37 +141,33 @@ class App extends Component {
     });
   }
 
-  guid() {
-    function s4() {
-      return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1);
-    }
-    return (
-      s4() +
-      s4() +
-      '-' +
-      s4() +
-      '-' +
-      s4() +
-      '-' +
-      s4() +
-      '-' +
-      s4() +
-      s4() +
-      s4()
-    );
-  }
-
   render() {
     const self = this;
 
-    let { posts } = self.props;
-    const { category, query } = self.state;
+    let {
+      posts,
+      confirmationModalElement,
+      confirmed,
+      showConfirmationModal,
+      confirmationModalType
+    } = self.props;
+
+    const {
+      category,
+      query,
+      isAppReady,
+      isSideBarVisible,
+      isFeedVisible,
+      sortedBy,
+      isProcessing,
+      isCreateModalOpen,
+      actionItem,
+      isCreateModalEdit
+    } = self.state;
 
     if (category.key !== 'all')
       posts = posts.filter(post => post.category === category.key);
-    posts = posts.sort((x, y) => y.timestamp - x.timestamp);
+    posts = sortBy(posts);
 
     if (query && query !== '')
       posts = posts.filter(post =>
@@ -172,48 +179,44 @@ class App extends Component {
 
     return (
       <Transition
-        visible={self.state.isAppReady}
+        visible={isAppReady}
         animation="fade"
         unmountOnHide={true}
         duration={2000}
       >
         <div>
           <MyNavigation
-            onHamburgerClick={self.onClick.bind(self)}
-            onSort={sortBy => self.updateState.bind(self)('sortBy', sortBy)}
-            onSearch={self.handleSearch.bind(self)}
+            onHamburgerClick={self.handleHamburgerClick}
+            onSort={sortedBy => self.updateState('sortedBy', sortedBy)}
+            onSearch={self.handleSearch}
           />
           <MySidebar
-            visible={this.state.toggleSideBar}
+            visible={isSideBarVisible}
             menuItems={menuItems}
-            item={self.state.category.key}
-            onItemSelect={category =>
-              self.updateState.bind(self)('category', category)
-            }
+            item={category.key}
+            onItemSelect={category => self.updateState('category', category)}
           />
-          <Segment basic className={self.state.toggleSideBar ? ' dimmed' : ''}>
+          <Segment basic className={isSideBarVisible ? ' dimmed' : ''}>
             <Button
               circular
               className="add-post"
               color="green"
               icon="pin"
               size="big"
-              onClick={() =>
-                self.setState({ modalOpen2: true, isEdit: false, item: {} })
-              }
+              onClick={() => self.openCreateModal({}, false)}
             />
             <Transition
-              visible={self.state.isFeedVisible}
+              visible={isFeedVisible}
               animation="fade up"
               duration={{ hide: 0, show: 500 }}
             >
               <div>
                 <Header as="h3" className="section-title">
-                  {self.state.category.value} Posts
+                  {category.value} Posts
                 </Header>
                 <div className="sorted-by">
-                  <Icon name={self.state.sortBy.icon} />
-                  {self.state.sortBy.value}
+                  <Icon name={sortedBy.icon} />
+                  {sortedBy.value}
                 </div>
                 {posts.length === 0 && (
                   <Header
@@ -228,7 +231,7 @@ class App extends Component {
                 <Feed>
                   <Dimmer
                     className="search-processing"
-                    active={self.state.isProcessing}
+                    active={isProcessing}
                     inverted
                   >
                     <Loader />
@@ -236,15 +239,16 @@ class App extends Component {
                   {posts.map(post => (
                     <MyPost
                       post={post}
-                      onPostAction={self.openModal.bind(self)}
+                      onPostAction={(action, actionItem) =>
+                        self.openCreateModal(actionItem, true)
+                      }
                       key={post.id}
-                      category={self.state.category}
+                      category={category}
                       onCategoryClick={category =>
-                        self.updateState.bind(self)('category', category)
+                        self.updateState('category', category)
                       }
                       isLeaving={
-                        post.id === self.props.confirmationModalElement &&
-                        self.props.confirmed
+                        post.id === confirmationModalElement && confirmed
                       }
                     />
                   ))}
@@ -253,16 +257,16 @@ class App extends Component {
             </Transition>
           </Segment>
           <MyConfirmationModal
-            isVisible={self.props.showConfirmationModal}
-            type={self.props.confirmationModalType}
-            onAction={self.closeConfirmationModal.bind(self)}
+            isVisible={showConfirmationModal}
+            type={confirmationModalType}
+            onAction={self.closeConfirmationModal}
           />
           <MyEditModal
-            isVisible={self.state.modalOpen2}
-            onClose={() => self.setState({ modalOpen2: false, item: {} })}
-            onAction={self.handleModalAction.bind(self)}
-            item={self.state.item}
-            isEdit={self.state.isEdit}
+            isVisible={isCreateModalOpen}
+            onClose={() => self.updateState('isCreateModalOpen', false)}
+            onAction={self.handleModalAction}
+            item={actionItem}
+            isEdit={isCreateModalEdit}
             categoryItems={menuItems.slice(1)}
           />
         </div>
@@ -270,6 +274,21 @@ class App extends Component {
     );
   }
 }
+
+App.propTypes = {
+  posts: PropTypes.array.isRequired,
+  showConfirmationModal: PropTypes.bool.isRequired,
+  confirmationModalType: PropTypes.string.isRequired,
+  confirmationModalElement: PropTypes.string.isRequired,
+  confirmed: PropTypes.bool.isRequired,
+  addPost: PropTypes.func.isRequired,
+  updatePost: PropTypes.func.isRequired,
+  deletePost: PropTypes.func.isRequired,
+  deleteComment: PropTypes.func.isRequired,
+  closeConfirmationModal: PropTypes.func.isRequired,
+  confirmConfirmationModal: PropTypes.func.isRequired,
+  clearConfirmationModal: PropTypes.func.isRequired
+};
 
 function mapStateToProps({ posts, confirmationModal }) {
   const formattedPosts = Object.keys(posts).map(key => ({

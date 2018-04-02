@@ -8,7 +8,7 @@ import { Comment, Form, Icon, Header, Button } from 'semantic-ui-react';
 // Actions
 import { addComment } from '../actions';
 // Helpers
-import { guid, sortBy } from '../utils/helpers';
+import { sortBy } from '../utils/helpers';
 
 class MyComments extends Component {
   constructor(props) {
@@ -48,13 +48,7 @@ class MyComments extends Component {
       const { postId } = this.props;
 
       setTimeout(() => {
-        this.props.addComment({
-          timestamp: Date.now(),
-          id: guid(),
-          parentId: postId,
-          body,
-          author
-        });
+        this.props.addComment({ parentId: postId, body, author });
         this.setState({
           author: '',
           body: '',

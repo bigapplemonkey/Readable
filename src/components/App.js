@@ -23,6 +23,7 @@ import {
 } from 'semantic-ui-react';
 // Redux Actions
 import {
+  getPosts,
   addPost,
   updatePost,
   deletePost,
@@ -32,7 +33,7 @@ import {
   clearConfirmationModal
 } from '../actions';
 // Helpers
-import { guid, sortBy } from '../utils/helpers';
+import { sortBy } from '../utils/helpers';
 
 // TODO: Remove, retrieve from API
 const menuItems = [
@@ -67,6 +68,7 @@ class App extends Component {
 
   // when app is ready
   componentDidMount() {
+    this.props.getPosts();
     this.setState({ isAppReady: true, isFeedVisible: true });
   }
 
@@ -113,18 +115,9 @@ class App extends Component {
 
   handleModalAction(action, actionItem) {
     const { title, body } = actionItem;
-
     action === 'create'
-      ? this.props.addPost({
-          ...actionItem,
-          id: guid(),
-          timestamp: Date.now()
-        })
-      : this.props.updatePost({
-          ...actionItem,
-          title,
-          body
-        });
+      ? this.props.addPost(actionItem)
+      : this.props.updatePost({ ...actionItem, title, body });
 
     this.setState({ isCreateModalOpen: false, actionItem: {} });
   }
@@ -281,6 +274,7 @@ App.propTypes = {
   confirmationModalType: PropTypes.string.isRequired,
   confirmationModalElement: PropTypes.string.isRequired,
   confirmed: PropTypes.bool.isRequired,
+  getPosts: PropTypes.func.isRequired,
   addPost: PropTypes.func.isRequired,
   updatePost: PropTypes.func.isRequired,
   deletePost: PropTypes.func.isRequired,
@@ -306,6 +300,7 @@ function mapStateToProps({ posts, confirmationModal }) {
 
 function mapDispatchToProps(dispatch) {
   return {
+    getPosts: data => dispatch(getPosts()),
     addPost: data => dispatch(addPost(data)),
     updatePost: data => dispatch(updatePost(data)),
     deletePost: data => dispatch(deletePost(data)),

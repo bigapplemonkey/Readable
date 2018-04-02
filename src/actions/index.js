@@ -1,10 +1,14 @@
+import * as API from '../utils/api';
+
 // Post Actions
+export const GET_POSTS = 'GET_POSTS';
 export const ADD_POST = 'ADD_POST';
 export const DELETE_POST = 'DELETE_POST';
 export const UPDATE_POST = 'UPDATE_POST';
 export const UP_VOTE_POST = 'UP_VOTE_POST';
 export const DOWN_VOTE_POST = 'DOWN_VOTE_POST';
 // Comment Actions
+export const GET_POST_COMMENTS = 'GET_POST_COMMENTS';
 export const ADD_COMMENT = 'ADD_COMMENT';
 export const DELETE_COMMENT = 'DELETE_COMMENT';
 export const UPDATE_COMMENT = 'UPDATE_COMMENT';
@@ -17,88 +21,104 @@ export const CONFIRM_CONFIRMATION_MODAL = 'CONFIRM_CONFIRMATION_MODAL';
 export const CLEAR_CONFIRMATION_MODAL = 'CLEAR_CONFIRMATION_MODAL';
 
 // Post Actions
-export function addPost({ id, timestamp, author, category, title, body }) {
-  return {
-    type: ADD_POST,
-    id,
-    timestamp,
-    author,
-    category,
-    title,
-    body
-  };
-}
+export const getPosts = () => dispatch =>
+  API.getPosts().then(posts =>
+    dispatch({
+      type: GET_POSTS,
+      posts
+    })
+  );
 
-export function deletePost({ id }) {
-  return {
-    type: DELETE_POST,
-    id
-  };
-}
+export const addPost = ({ author, category, title, body }) => dispatch =>
+  API.createPost({ author, category, title, body }).then(post =>
+    dispatch({
+      type: ADD_POST,
+      post
+    })
+  );
 
-export function updatePost({ id, title, body }) {
-  return {
-    type: UPDATE_POST,
-    id,
-    title,
-    body
-  };
-}
+export const updatePost = ({ id, title, body }) => dispatch =>
+  API.updatePost({ id, title, body }).then(post =>
+    dispatch({
+      type: UPDATE_POST,
+      post
+    })
+  );
 
-export function upVotePost({ id }) {
-  return {
-    type: UP_VOTE_POST,
-    id
-  };
-}
+export const deletePost = ({ id }) => dispatch =>
+  API.deletePost(id).then(post =>
+    dispatch({
+      type: DELETE_POST,
+      id: post.id
+    })
+  );
 
-export function downVotePost({ id }) {
-  return {
-    type: DOWN_VOTE_POST,
-    id
-  };
-}
+export const upVotePost = ({ id }) => dispatch =>
+  API.votePost(id, 'upVote').then(post =>
+    dispatch({
+      type: UP_VOTE_POST,
+      id: post.id
+    })
+  );
+
+export const downVotePost = ({ id }) => dispatch =>
+  API.votePost(id, 'downVote').then(post =>
+    dispatch({
+      type: DOWN_VOTE_POST,
+      id: post.id
+    })
+  );
 
 // Comment Actions
-export function addComment({ id, parentId, timestamp, author, body }) {
-  return {
-    type: ADD_COMMENT,
-    id,
-    timestamp,
-    parentId,
-    author,
-    body
-  };
-}
+export const getPostComments = id => dispatch =>
+  API.getPostComments(id).then(comments =>
+    dispatch({
+      type: GET_POST_COMMENTS,
+      comments
+    })
+  );
 
-export function deleteComment({ id }) {
-  return {
-    type: DELETE_COMMENT,
-    id
-  };
-}
+export const addComment = ({ parentId, timestamp, author, body }) => dispatch =>
+  API.createComment({ parentId, timestamp, author, body }).then(comment =>
+    dispatch({
+      type: ADD_COMMENT,
+      comment
+    })
+  );
 
-export function updateComment({ id, title, body }) {
-  return {
-    type: UPDATE_COMMENT,
-    id,
-    body
-  };
-}
+export const deleteComment = ({ id }) => dispatch =>
+  API.deleteComment(id).then(comment =>
+    dispatch({
+      type: DELETE_COMMENT,
+      id: comment.id
+    })
+  );
 
-export function upVoteComment({ id }) {
-  return {
-    type: UP_VOTE_COMMENT,
-    id
-  };
-}
+export const updateComment = ({ id, title, body }) => dispatch =>
+  API.updateComment({ id, title, body }).then(comment =>
+    dispatch({
+      type: UPDATE_COMMENT,
+      id: comment.id,
+      timestamp: comment.timestamp,
+      body: comment.body
+    })
+  );
 
-export function downVoteComment({ id }) {
-  return {
-    type: DOWN_VOTE_COMMENT,
-    id
-  };
-}
+export const upVoteComment = ({ id }) => dispatch =>
+  API.voteComment(id, 'upVote').then(comment =>
+    dispatch({
+      type: UP_VOTE_COMMENT,
+      id: comment.id
+    })
+  );
+
+export const downVoteComment = ({ id }) => dispatch =>
+  API.voteComment(id, 'downVote').then(comment =>
+    dispatch({
+      type: DOWN_VOTE_COMMENT,
+      id: comment.id
+    })
+  );
 
 // UI Actions
 export function openConfirmationModal({ elementType, id }) {

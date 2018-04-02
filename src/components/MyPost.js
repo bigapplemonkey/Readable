@@ -8,7 +8,12 @@ import { Feed, Icon, Dimmer, Loader } from 'semantic-ui-react';
 import MyComments from './MyComments';
 import MyVote from './MyVote';
 // Redux Actions
-import { upVotePost, downVotePost, openConfirmationModal } from '../actions';
+import {
+  upVotePost,
+  downVotePost,
+  getPostComments,
+  openConfirmationModal
+} from '../actions';
 // Helpers
 import { getPhoto, capitalize } from '../utils/helpers';
 
@@ -16,6 +21,11 @@ class MyPost extends Component {
   state = {
     isLoading: true
   };
+
+  componentDidMount() {
+    const { post, getPostComments } = this.props;
+    getPostComments(post.id);
+  }
 
   // remove loader when image loaded
   imageLoaded() {
@@ -122,11 +132,15 @@ MyPost.propTypes = {
   isLeaving: PropTypes.bool.isRequired,
   onPostAction: PropTypes.func.isRequired,
   openConfirmationModal: PropTypes.func.isRequired,
-  onCategoryClick: PropTypes.func.isRequired
+  onCategoryClick: PropTypes.func.isRequired,
+  getPostComments: PropTypes.func.isRequired,
+  upVotePost: PropTypes.func.isRequired,
+  downVotePost: PropTypes.func.isRequired
 };
 
 function mapDispatchToProps(dispatch) {
   return {
+    getPostComments: data => dispatch(getPostComments(data)),
     upVotePost: data => dispatch(upVotePost(data)),
     downVotePost: data => dispatch(downVotePost(data)),
     openConfirmationModal: data => dispatch(openConfirmationModal(data))

@@ -1,8 +1,8 @@
 import { guid } from './helpers';
 
-const api = 'http://localhost:3001';
+const api = 'https://my-readable-backend.herokuapp.com';
 
-const headers = { Authorization: 'readable2' };
+const headers = { Authorization: 'my-readable' };
 
 export const getCategories = () =>
   fetch(`${api}/categories`, { headers })

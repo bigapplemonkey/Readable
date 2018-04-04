@@ -122,23 +122,13 @@ class MyComments extends Component {
           )}
         </Header>
         {comments.length > 0 && (
-          <MyComment
-            key={comments[0].id}
-            comment={comments[0]}
-            handleCommentAction={console.log}
-          />
+          <MyComment key={comments[0].id} comment={comments[0]} />
         )}
         {comments.length > 1 && (
           <div className={`more-comments${showMoreComments}`}>
             {comments
               .slice(1)
-              .map(comment => (
-                <MyComment
-                  key={comment.id}
-                  comment={comment}
-                  handleCommentAction={console.log}
-                />
-              ))}
+              .map(comment => <MyComment key={comment.id} comment={comment} />)}
           </div>
         )}
       </Comment.Group>

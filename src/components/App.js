@@ -11,6 +11,7 @@ import MySidebar from './MySidebar';
 import MyPost from './MyPost';
 import MyConfirmationModal from './MyConfirmationModal';
 import MyEditModal from './MyEditModal';
+import MyShowPostModal from './MyShowPostModal';
 import {
   Segment,
   Icon,
@@ -39,8 +40,8 @@ import { sortBy } from '../utils/helpers';
 const menuItems = [
   { key: 'all', value: 'All', icon: 'home' },
   { key: 'react', value: 'React', icon: 'react' },
-  { key: 'redux', value: 'Redux', icon: 'camera' },
-  { key: 'udacity', value: 'Udacity', icon: 'camera' }
+  { key: 'redux', value: 'Redux', image: './redux-logo-opt.png' },
+  { key: 'udacity', value: 'Udacity', image: './udacity-logo-opt.png' }
 ];
 
 class App extends Component {
@@ -51,8 +52,10 @@ class App extends Component {
       isSideBarVisible: false,
       isCreateModalOpen: false,
       isCreateModalEdit: false,
+      isShowPostModalOpen: false,
       isFeedVisible: false,
       isProcessing: false,
+      showItem: {},
       actionItem: {},
       sortedBy: { key: 'date', value: 'Date', icon: 'sort content ascending' },
       category: { key: 'all', value: 'All', icon: 'home' },
@@ -64,6 +67,8 @@ class App extends Component {
     this.updateState = this.updateState.bind(this);
     this.handleModalAction = this.handleModalAction.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
+    this.handleOpenPost = this.handleOpenPost.bind(this);
+    this.handleSorting = this.handleSorting.bind(this);
   }
 
   // when app is ready
@@ -92,6 +97,8 @@ class App extends Component {
       const { confirmationModalElement } = this.props;
       this.props.confirmConfirmationModal();
 
+      if (confirmationModalType === 'post')
+        this.setState({ isShowPostModalOpen: false });
       setTimeout(() => {
         if (confirmationModalType === 'post')
           this.props.deletePost({ id: confirmationModalElement });
@@ -122,6 +129,10 @@ class App extends Component {
     this.setState({ isCreateModalOpen: false, actionItem: {} });
   }
 
+  handleOpenPost(showItem) {
+    this.setState({ isShowPostModalOpen: true, showItem });
+  }
+
   handleSearch(query) {
     this.setState({ isProcessing: true }, () => {
       setTimeout(
@@ -132,6 +143,17 @@ class App extends Component {
         300
       );
     });
+  }
+
+  handleSorting(sortedBy) {
+    if (sortedBy.key !== this.state.sortedBy.key) {
+      this.setState({ isProcessing: true }, () => {
+        setTimeout(() => {
+          this.updateState('sortedBy', sortedBy);
+          this.setState({ isProcessing: false });
+        }, 300);
+      });
+    }
   }
 
   render() {
@@ -154,13 +176,15 @@ class App extends Component {
       sortedBy,
       isProcessing,
       isCreateModalOpen,
+      isShowPostModalOpen,
+      showItem,
       actionItem,
       isCreateModalEdit
     } = self.state;
 
     if (category.key !== 'all')
       posts = posts.filter(post => post.category === category.key);
-    posts = sortBy(posts);
+    posts = sortBy(posts, sortedBy.key);
 
     if (query && query !== '')
       posts = posts.filter(post =>
@@ -180,7 +204,7 @@ class App extends Component {
         <div>
           <MyNavigation
             onHamburgerClick={self.handleHamburgerClick}
-            onSort={sortedBy => self.updateState('sortedBy', sortedBy)}
+            onSort={self.handleSorting}
             onSearch={self.handleSearch}
           />
           <MySidebar
@@ -243,6 +267,8 @@ class App extends Component {
                       isLeaving={
                         post.id === confirmationModalElement && confirmed
                       }
+                      isClickable={true}
+                      onOpenPost={self.handleOpenPost}
                     />
                   ))}
                 </Feed>
@@ -261,6 +287,17 @@ class App extends Component {
             item={actionItem}
             isEdit={isCreateModalEdit}
             categoryItems={menuItems.slice(1)}
+          />
+          <MyShowPostModal
+            isVisible={isShowPostModalOpen}
+            postId={showItem.id}
+            onClose={() => self.updateState('isShowPostModalOpen', false)}
+            onAction={self.handleModalAction}
+            item={actionItem}
+            isEdit={isCreateModalEdit}
+            onPostAction={(action, actionItem) =>
+              self.openCreateModal(actionItem, true)
+            }
           />
         </div>
       </Transition>

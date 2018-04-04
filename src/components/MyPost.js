@@ -47,7 +47,9 @@ class MyPost extends Component {
       isLeaving,
       onPostAction,
       openConfirmationModal,
-      onCategoryClick
+      onCategoryClick,
+      onOpenPost,
+      isClickable
     } = self.props;
 
     const { isLoading } = self.state;
@@ -86,6 +88,7 @@ class MyPost extends Component {
               <MyVote
                 count={post.voteScore}
                 onVote={self.handleVote.bind(self)}
+                otherClass="post-vote"
               />
             </div>
           }
@@ -116,7 +119,13 @@ class MyPost extends Component {
             </Feed.Date>
           </Feed.Summary>
           <Feed.Extra text>
-            <h3 className="post-title">{post.title}</h3>
+            {isClickable ? (
+              <a onClick={() => onOpenPost(post)}>
+                <h3>{post.title}</h3>
+              </a>
+            ) : (
+              <h3>{post.title}</h3>
+            )}
             {post.body}
           </Feed.Extra>
           <MyComments postId={post.id} />
@@ -129,10 +138,12 @@ class MyPost extends Component {
 MyPost.propTypes = {
   post: PropTypes.object.isRequired,
   category: PropTypes.object.isRequired,
-  isLeaving: PropTypes.bool.isRequired,
+  isLeaving: PropTypes.bool,
   onPostAction: PropTypes.func.isRequired,
   openConfirmationModal: PropTypes.func.isRequired,
   onCategoryClick: PropTypes.func.isRequired,
+  onOpenPost: PropTypes.func,
+  isClickable: PropTypes.bool,
   getPostComments: PropTypes.func.isRequired,
   upVotePost: PropTypes.func.isRequired,
   downVotePost: PropTypes.func.isRequired

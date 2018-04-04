@@ -16,9 +16,12 @@ class MyVote extends Component {
     const self = this;
 
     const { visible } = self.state;
+    const { otherClass } = self.props;
+
+    const extraClass = otherClass ? ` ${otherClass}` : '';
 
     return (
-      <div className="voting">
+      <div className={`voting${extraClass}`}>
         <Icon name="triangle up" onClick={() => self.updateCount(true)} />
         <div className="count">
           <Transition animation="jiggle" duration={500} visible={visible}>
@@ -36,7 +39,8 @@ class MyVote extends Component {
 
 MyVote.propTypes = {
   count: PropTypes.number.isRequired,
-  onVote: PropTypes.func.isRequired
+  onVote: PropTypes.func.isRequired,
+  otherClass: PropTypes.string
 };
 
 export default MyVote;

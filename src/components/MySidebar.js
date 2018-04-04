@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 // Components
-import { Sidebar, Menu, Icon } from 'semantic-ui-react';
+import { Sidebar, Menu, Icon, Image } from 'semantic-ui-react';
 
 class MySidebar extends Component {
   constructor(props) {
@@ -74,7 +74,11 @@ class MySidebar extends Component {
               self.updateActiveItem(item);
             }}
           >
-            <Icon name={item.icon} />
+            {item.icon ? (
+              <Icon name={item.icon} />
+            ) : (
+              <Image src={item.image} centered />
+            )}
             {item.value}
           </Menu.Item>
         ))}

@@ -161,8 +161,7 @@ class MyComment extends Component {
 }
 
 MyComment.propTypes = {
-  comment: PropTypes.object.isRequired,
-  handleCommentAction: PropTypes.func.isRequired
+  comment: PropTypes.object.isRequired
 };
 
 function mapStateToProps({ confirmationModal }) {

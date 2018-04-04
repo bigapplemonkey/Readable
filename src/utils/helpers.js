@@ -30,10 +30,24 @@ export function guid() {
   );
 }
 
-export function sortBy(array, type = 'date', attribute = 'timestamp') {
+export function sortBy(array, type = 'date') {
   switch (type) {
     case 'date':
-      return array.sort((x, y) => y[attribute] - x[attribute]);
+      return array.sort((x, y) => y.timestamp - x.timestamp);
+    case 'vote':
+      return array.sort((x, y) => y.voteScore - x.voteScore);
+    case 'name':
+      return array.sort((x, y) => {
+        const text1 = x.author.toUpperCase();
+        const text2 = y.author.toUpperCase();
+        return text1 < text2 ? -1 : text1 > text2 ? 1 : 0;
+      });
+    case 'title':
+      return array.sort((x, y) => {
+        const text1 = x.title.toUpperCase();
+        const text2 = y.title.toUpperCase();
+        return text1 < text2 ? -1 : text1 > text2 ? 1 : 0;
+      });
     default:
       return array;
   }

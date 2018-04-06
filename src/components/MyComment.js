@@ -121,7 +121,7 @@ class MyComment extends Component {
                 onChange={event => self.handleChange(event)}
               />
             </Form.Field>
-            <Form.Group>
+            <Form.Group className="comment-buttons">
               <Button
                 basic
                 color="grey"

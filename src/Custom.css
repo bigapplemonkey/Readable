@@ -306,7 +306,7 @@ body {
 }
 
 .ui.labeled.icon.menu .item {
-  transition: background-color 250ms linear;
+  transition: background-color 100ms linear;
 }
 
 .ui.feed > .event > .label {

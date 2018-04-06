@@ -1,3 +1,7 @@
+const REPOSITORY_NAME = window.location.origin.includes('localhost')
+  ? ''
+  : 'Readable';
+
 export function getPhoto(id, size) {
   return `https://api.adorable.io/avatars/${size ? size : '47'}/${id}.png`;
 }
@@ -51,4 +55,26 @@ export function sortBy(array, type = 'date') {
     default:
       return array;
   }
+}
+
+export function getParams(originalPath) {
+  console.log(originalPath);
+  let path;
+  if (originalPath.includes('/')) {
+    path = REPOSITORY_NAME
+      ? originalPath.replace(`/${REPOSITORY_NAME}`, '')
+      : originalPath;
+    path = path.replace('/', '');
+  } else path = originalPath;
+
+  const params = path.split('/');
+
+  console.log({
+    category: params[0] ? params[0] : 'all',
+    postId: params[1] ? params[1] : null
+  });
+  return {
+    category: params[0] ? params[0] : 'all',
+    postId: params[1] ? params[1] : null
+  };
 }

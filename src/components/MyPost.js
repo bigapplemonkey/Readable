@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Moment from 'react-moment';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 // Components
 import { Feed, Icon, Dimmer, Loader } from 'semantic-ui-react';
 import MyComments from './MyComments';
@@ -100,7 +101,8 @@ class MyPost extends Component {
                 <span>
                   {' '}
                   in{' '}
-                  <a
+                  <Link
+                    to={`${process.env.PUBLIC_URL}/${post.category}`}
                     onClick={() =>
                       onCategoryClick({
                         key: post.category,
@@ -110,7 +112,7 @@ class MyPost extends Component {
                   >
                     {' '}
                     {capitalize(post.category)}
-                  </a>
+                  </Link>
                 </span>
               )}
             </div>
@@ -120,9 +122,12 @@ class MyPost extends Component {
           </Feed.Summary>
           <Feed.Extra text>
             {isClickable ? (
-              <a onClick={() => onOpenPost(post)}>
+              <Link
+                to={`${process.env.PUBLIC_URL}/${category.key}/${post.id}`}
+                onClick={() => onOpenPost(post)}
+              >
                 <h3>{post.title}</h3>
-              </a>
+              </Link>
             ) : (
               <h3>{post.title}</h3>
             )}

@@ -1,6 +1,7 @@
 // React packages
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 // Components
 import { Sidebar, Menu, Icon, Image } from 'semantic-ui-react';
 
@@ -9,8 +10,7 @@ class MySidebar extends Component {
     super(props);
     this.state = {
       toggleSideBar: true,
-      sidebarDirection: 'horizontal',
-      activeItem: 'all'
+      sidebarDirection: 'horizontal'
     };
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
   }
@@ -43,16 +43,11 @@ class MySidebar extends Component {
     }
   }
 
-  updateActiveItem(activeItem) {
-    this.setState({ activeItem: activeItem.key });
-    this.props.onItemSelect(activeItem);
-  }
-
   render() {
     const self = this;
 
-    const { sidebarDirection, toggleSideBar, activeItem } = self.state;
-    const { menuItems, visible } = self.props;
+    const { sidebarDirection, toggleSideBar } = self.state;
+    const { menuItems, visible, activeItemKey } = self.props;
 
     return (
       <Sidebar
@@ -66,21 +61,21 @@ class MySidebar extends Component {
         inverted
       >
         {menuItems.map(item => (
-          <Menu.Item
-            name={item.hey}
-            key={item.key}
-            active={item.key === activeItem}
-            onClick={() => {
-              self.updateActiveItem(item);
-            }}
-          >
-            {item.icon ? (
-              <Icon name={item.icon} />
-            ) : (
-              <Image src={item.image} centered />
-            )}
-            {item.value}
-          </Menu.Item>
+          <Link to={`${process.env.PUBLIC_URL}/${item.key}`} key={item.key}>
+            <Menu.Item
+              name={item.hey}
+              key={item.key}
+              as="div"
+              active={item.key === activeItemKey}
+            >
+              {item.icon ? (
+                <Icon name={item.icon} />
+              ) : (
+                <Image src={item.image} centered />
+              )}
+              {item.value}
+            </Menu.Item>
+          </Link>
         ))}
       </Sidebar>
     );
@@ -90,8 +85,7 @@ class MySidebar extends Component {
 MySidebar.propTypes = {
   menuItems: PropTypes.array.isRequired,
   visible: PropTypes.bool.isRequired,
-  onItemSelect: PropTypes.func.isRequired,
-  item: PropTypes.string
+  activeItemKey: PropTypes.string.isRequired
 };
 
 export default MySidebar;

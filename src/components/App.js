@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { Route, withRouter } from 'react-router-dom';
 // Styles
 import '../semantic/dist/semantic.min.css';
 import '../Custom.css';
@@ -34,7 +35,7 @@ import {
   clearConfirmationModal
 } from '../actions';
 // Helpers
-import { sortBy } from '../utils/helpers';
+import { capitalize, sortBy, getParams } from '../utils/helpers';
 
 // TODO: Remove, retrieve from API
 const menuItems = [
@@ -74,7 +75,19 @@ class App extends Component {
   // when app is ready
   componentDidMount() {
     this.props.getPosts();
+    this.checkPathCategory(
+      this.state.category.key,
+      this.props.location.pathname
+    );
     this.setState({ isAppReady: true, isFeedVisible: true });
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    this.checkPathCategory(
+      prevProps.location.pathname,
+      this.props.location.pathname
+    );
+    document.title = `Readable - ${this.state.category.value}`;
   }
 
   handleHamburgerClick() {
@@ -156,6 +169,24 @@ class App extends Component {
     }
   }
 
+  checkPathCategory(prevPath, currentPath) {
+    let prevURLCategory = getParams(prevPath).category;
+    let currentURLCategory = getParams(currentPath).category;
+    const category = {
+      key: currentURLCategory,
+      value: capitalize(currentURLCategory)
+    };
+
+    // console.log({
+    //   prevURLCategory,
+    //   currentURLCategory
+    // });
+
+    if (prevURLCategory !== currentURLCategory) {
+      this.updateState('category', category);
+    }
+  }
+
   render() {
     const self = this;
 
@@ -184,6 +215,7 @@ class App extends Component {
 
     if (category.key !== 'all')
       posts = posts.filter(post => post.category === category.key);
+
     posts = sortBy(posts, sortedBy.key);
 
     if (query && query !== '')
@@ -210,8 +242,7 @@ class App extends Component {
           <MySidebar
             visible={isSideBarVisible}
             menuItems={menuItems}
-            item={category.key}
-            onItemSelect={category => self.updateState('category', category)}
+            activeItemKey={category.key}
           />
           <Segment basic className={isSideBarVisible ? ' dimmed' : ''}>
             <Button
@@ -222,58 +253,67 @@ class App extends Component {
               size="big"
               onClick={() => self.openCreateModal({}, false)}
             />
-            <Transition
-              visible={isFeedVisible}
-              animation="fade up"
-              duration={{ hide: 0, show: 500 }}
-            >
-              <div>
-                <Header as="h3" className="section-title">
-                  {category.value} Posts
-                </Header>
-                <div className="sorted-by">
-                  <Icon name={sortedBy.icon} />
-                  {sortedBy.value}
-                </div>
-                {posts.length === 0 && (
-                  <Header
-                    as="div"
-                    icon="attention"
-                    content={`No posts in this category${
-                      query && query !== '' ? ` for '${query}'` : ''
-                    }`}
-                    disabled
-                  />
-                )}
-                <Feed>
-                  <Dimmer
-                    className="search-processing"
-                    active={isProcessing}
-                    inverted
+            <Route
+              path={`${process.env.PUBLIC_URL}/(|${menuItems
+                .map(e => e.key)
+                .join('|')})`}
+              render={() => {
+                return (
+                  <Transition
+                    visible={isFeedVisible}
+                    animation="fade up"
+                    duration={{ hide: 0, show: 500 }}
                   >
-                    <Loader />
-                  </Dimmer>
-                  {posts.map(post => (
-                    <MyPost
-                      post={post}
-                      onPostAction={(action, actionItem) =>
-                        self.openCreateModal(actionItem, true)
-                      }
-                      key={post.id}
-                      category={category}
-                      onCategoryClick={category =>
-                        self.updateState('category', category)
-                      }
-                      isLeaving={
-                        post.id === confirmationModalElement && confirmed
-                      }
-                      isClickable={true}
-                      onOpenPost={self.handleOpenPost}
-                    />
-                  ))}
-                </Feed>
-              </div>
-            </Transition>
+                    <div>
+                      <Header as="h3" className="section-title">
+                        {category.value} Posts
+                      </Header>
+                      <div className="sorted-by">
+                        <Icon name={sortedBy.icon} />
+                        {sortedBy.value}
+                      </div>
+                      {posts.length === 0 && (
+                        <Header
+                          as="div"
+                          icon="attention"
+                          content={`No posts in this category${
+                            query && query !== '' ? ` for '${query}'` : ''
+                          }`}
+                          disabled
+                        />
+                      )}
+                      <Feed>
+                        <Dimmer
+                          className="search-processing"
+                          active={isProcessing}
+                          inverted
+                        >
+                          <Loader />
+                        </Dimmer>
+                        {posts.map(post => (
+                          <MyPost
+                            post={post}
+                            onPostAction={(action, actionItem) =>
+                              self.openCreateModal(actionItem, true)
+                            }
+                            key={post.id}
+                            category={category}
+                            onCategoryClick={category =>
+                              self.updateState('category', category)
+                            }
+                            isLeaving={
+                              post.id === confirmationModalElement && confirmed
+                            }
+                            isClickable={true}
+                            onOpenPost={self.handleOpenPost}
+                          />
+                        ))}
+                      </Feed>
+                    </div>
+                  </Transition>
+                );
+              }}
+            />
           </Segment>
           <MyConfirmationModal
             isVisible={showConfirmationModal}
@@ -348,4 +388,4 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

@@ -6,10 +6,10 @@ In this project, we leverage Redux's application state management capability and
 
 In Readable users are be able to post content to predefined categories, comment on their posts and other users' posts, and vote on posts and comments. Users are also able to edit, delete posts and comments and search posts.
 
-![Mobile](http://i65.tinypic.com/2isfgp2.png)
-![Mobile](http://i64.tinypic.com/opo3me.png)
-![Mobile](http://i63.tinypic.com/2u8yys0.png)
-![Mobile](http://i63.tinypic.com/znt3cm.png)
+![Mobile](http://i63.tinypic.com/5mde3c.png)
+![Mobile](http://i63.tinypic.com/1z6cqc3.png)
+![Mobile](http://i64.tinypic.com/2b85e0.png)
+![Mobile](http://i64.tinypic.com/hsuxc9.png)
 
 ## Installing
 

@@ -25,7 +25,7 @@ class MyPost extends Component {
 
   componentDidMount() {
     const { post, getPostComments } = this.props;
-    getPostComments(post.id);
+    if (post.commentCount > 0) getPostComments(post.id);
   }
 
   // remove loader when image loaded

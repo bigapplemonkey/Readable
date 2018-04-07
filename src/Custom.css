@@ -110,7 +110,7 @@ body {
 .ui.comments .comment {
   position: relative;
   margin-left: 45px;
-  margin-bottom: 1.6rem;
+  margin-bottom: 1.5rem;
 }
 
 .ui.comments .comment:first-child {

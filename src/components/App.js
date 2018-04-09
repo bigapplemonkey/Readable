@@ -41,8 +41,16 @@ import { capitalize, sortBy, getParams } from '../utils/helpers';
 const menuItems = [
   { key: 'all', value: 'All', icon: 'home' },
   { key: 'react', value: 'React', icon: 'react' },
-  { key: 'redux', value: 'Redux', image: './redux-logo-opt.png' },
-  { key: 'udacity', value: 'Udacity', image: './udacity-logo-opt.png' }
+  {
+    key: 'redux',
+    value: 'Redux',
+    image: `${process.env.PUBLIC_URL}/redux-logo-opt.png`
+  },
+  {
+    key: 'udacity',
+    value: 'Udacity',
+    image: `${process.env.PUBLIC_URL}/udacity-logo-opt.png`
+  }
 ];
 
 class App extends Component {
@@ -53,10 +61,8 @@ class App extends Component {
       isSideBarVisible: false,
       isCreateModalOpen: false,
       isCreateModalEdit: false,
-      isShowPostModalOpen: false,
       isFeedVisible: false,
       isProcessing: false,
-      showItem: {},
       actionItem: {},
       sortedBy: { key: 'date', value: 'Date', icon: 'sort content ascending' },
       category: { key: 'all', value: 'All', icon: 'home' },
@@ -68,7 +74,6 @@ class App extends Component {
     this.updateState = this.updateState.bind(this);
     this.handleModalAction = this.handleModalAction.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
-    this.handleOpenPost = this.handleOpenPost.bind(this);
     this.handleSorting = this.handleSorting.bind(this);
   }
 
@@ -82,7 +87,7 @@ class App extends Component {
     this.setState({ isAppReady: true, isFeedVisible: true });
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps) {
     this.checkPathCategory(
       prevProps.location.pathname,
       this.props.location.pathname
@@ -110,8 +115,6 @@ class App extends Component {
       const { confirmationModalElement } = this.props;
       this.props.confirmConfirmationModal();
 
-      if (confirmationModalType === 'post')
-        this.setState({ isShowPostModalOpen: false });
       setTimeout(() => {
         if (confirmationModalType === 'post')
           this.props.deletePost({ id: confirmationModalElement });
@@ -142,10 +145,6 @@ class App extends Component {
     this.setState({ isCreateModalOpen: false, actionItem: {} });
   }
 
-  handleOpenPost(showItem) {
-    this.setState({ isShowPostModalOpen: true, showItem });
-  }
-
   handleSearch(query) {
     this.setState({ isProcessing: true }, () => {
       setTimeout(
@@ -170,20 +169,14 @@ class App extends Component {
   }
 
   checkPathCategory(prevPath, currentPath) {
-    let prevURLCategory = getParams(prevPath).category;
-    let currentURLCategory = getParams(currentPath).category;
-    const category = {
-      key: currentURLCategory,
-      value: capitalize(currentURLCategory)
-    };
+    const prevCategory = getParams(prevPath).category;
+    const { category } = getParams(currentPath);
 
-    // console.log({
-    //   prevURLCategory,
-    //   currentURLCategory
-    // });
-
-    if (prevURLCategory !== currentURLCategory) {
-      this.updateState('category', category);
+    if (prevCategory !== category) {
+      this.updateState('category', {
+        key: category,
+        value: capitalize(category)
+      });
     }
   }
 
@@ -207,8 +200,6 @@ class App extends Component {
       sortedBy,
       isProcessing,
       isCreateModalOpen,
-      isShowPostModalOpen,
-      showItem,
       actionItem,
       isCreateModalEdit
     } = self.state;
@@ -227,38 +218,35 @@ class App extends Component {
       );
 
     return (
-      <Transition
-        visible={isAppReady}
-        animation="fade"
-        unmountOnHide={true}
-        duration={2000}
-      >
-        <div>
-          <MyNavigation
-            onHamburgerClick={self.handleHamburgerClick}
-            onSort={self.handleSorting}
-            onSearch={self.handleSearch}
-          />
-          <MySidebar
-            visible={isSideBarVisible}
-            menuItems={menuItems}
-            activeItemKey={category.key}
-          />
-          <Segment basic className={isSideBarVisible ? ' dimmed' : ''}>
-            <Button
-              circular
-              className="add-post"
-              color="green"
-              icon="pin"
-              size="big"
-              onClick={() => self.openCreateModal({}, false)}
-            />
-            <Route
-              path={`${process.env.PUBLIC_URL}/(|${menuItems
-                .map(e => e.key)
-                .join('|')})`}
-              render={() => {
-                return (
+      <Route
+        render={({ match }) => {
+          return (
+            <Transition
+              visible={isAppReady}
+              animation="fade"
+              unmountOnHide={true}
+              duration={2000}
+            >
+              <div>
+                <MyNavigation
+                  onHamburgerClick={self.handleHamburgerClick}
+                  onSort={self.handleSorting}
+                  onSearch={self.handleSearch}
+                />
+                <MySidebar
+                  visible={isSideBarVisible}
+                  menuItems={menuItems}
+                  activeItemKey={category.key}
+                />
+                <Segment basic className={isSideBarVisible ? ' dimmed' : ''}>
+                  <Button
+                    circular
+                    className="add-post"
+                    color="green"
+                    icon="pin"
+                    size="big"
+                    onClick={() => self.openCreateModal({}, false)}
+                  />
                   <Transition
                     visible={isFeedVisible}
                     animation="fade up"
@@ -305,42 +293,49 @@ class App extends Component {
                               post.id === confirmationModalElement && confirmed
                             }
                             isClickable={true}
-                            onOpenPost={self.handleOpenPost}
                           />
                         ))}
                       </Feed>
                     </div>
                   </Transition>
-                );
-              }}
-            />
-          </Segment>
-          <MyConfirmationModal
-            isVisible={showConfirmationModal}
-            type={confirmationModalType}
-            onAction={self.closeConfirmationModal}
-          />
-          <MyEditModal
-            isVisible={isCreateModalOpen}
-            onClose={() => self.updateState('isCreateModalOpen', false)}
-            onAction={self.handleModalAction}
-            item={actionItem}
-            isEdit={isCreateModalEdit}
-            categoryItems={menuItems.slice(1)}
-          />
-          <MyShowPostModal
-            isVisible={isShowPostModalOpen}
-            postId={showItem.id}
-            onClose={() => self.updateState('isShowPostModalOpen', false)}
-            onAction={self.handleModalAction}
-            item={actionItem}
-            isEdit={isCreateModalEdit}
-            onPostAction={(action, actionItem) =>
-              self.openCreateModal(actionItem, true)
-            }
-          />
-        </div>
-      </Transition>
+                </Segment>
+                <MyConfirmationModal
+                  isVisible={showConfirmationModal}
+                  type={confirmationModalType}
+                  onAction={self.closeConfirmationModal}
+                  category={category.key}
+                />
+                <MyEditModal
+                  isVisible={isCreateModalOpen}
+                  onClose={() => self.updateState('isCreateModalOpen', false)}
+                  onAction={self.handleModalAction}
+                  item={actionItem}
+                  isEdit={isCreateModalEdit}
+                  categoryItems={menuItems.slice(1)}
+                />
+                <Route
+                  path={`${process.env.PUBLIC_URL}/:category/:postId`}
+                  render={({ match }) => {
+                    return (
+                      <MyShowPostModal
+                        isVisible={true}
+                        postId={match.params.postId}
+                        category={category.key}
+                        onAction={self.handleModalAction}
+                        item={actionItem}
+                        isEdit={isCreateModalEdit}
+                        onPostAction={(action, actionItem) =>
+                          self.openCreateModal(actionItem, true)
+                        }
+                      />
+                    );
+                  }}
+                />
+              </div>
+            </Transition>
+          );
+        }}
+      />
     );
   }
 }

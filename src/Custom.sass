@@ -97,7 +97,7 @@ body
 .ui.comments .comment
   position: relative
   margin-left: 45px
-  margin-bottom: 1.5rem
+  margin-bottom: 1.3rem
 
 .ui.comments .comment:first-child
   padding-top: 0.2rem
@@ -123,7 +123,7 @@ body
 .ui.comments .comment .actions a
   margin: 0 0.6em 0 0
 
-.ui.comments .comment .actions a:hover .delete, .ui.comments .comment:hover .actions a .delete, .feed-actions a:hover .delete
+.ui.comments .comment .actions a:hover .trash, .ui.comments .comment:hover .actions a .trash, .feed-actions a:hover .trash
   color: #ff2733
 
 .ui.comments .comment .actions a:hover .edit, .ui.comments .comment:hover .actions a .edit, .feed-actions a:hover .edit
@@ -310,6 +310,16 @@ a:hover.author-link
 
 .ui.form .fields.comment-buttons
   margin-bottom: 0
+
+a.close-link
+  top: 1.0535rem;
+  right: 1rem
+  color: rgba(0,0,0,.87)
+  position: absolute
+  font-size: 1.25em
+
+a.accept-link
+  margin-left: 0.7rem
 
 @media (min-width: 1201px)
   .ui.attached.inverted.menu

@@ -145,7 +145,7 @@ class MyComment extends Component {
               onClick={() => self.handleToggleEditMode(comment)}
             />
             <Comment.Action
-              children={<Icon name="delete" />}
+              children={<Icon name="trash" />}
               onClick={() =>
                 openConfirmationModal({
                   elementType: 'comment',

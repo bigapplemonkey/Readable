@@ -58,7 +58,6 @@ export function sortBy(array, type = 'date') {
 }
 
 export function getParams(originalPath) {
-  console.log(originalPath);
   let path;
   if (originalPath.includes('/')) {
     path = REPOSITORY_NAME
@@ -69,12 +68,7 @@ export function getParams(originalPath) {
 
   const params = path.split('/');
 
-  console.log({
-    category: params[0] ? params[0] : 'all',
-    postId: params[1] ? params[1] : null
-  });
   return {
-    category: params[0] ? params[0] : 'all',
-    postId: params[1] ? params[1] : null
+    category: params[0] ? params[0] : 'all'
   };
 }

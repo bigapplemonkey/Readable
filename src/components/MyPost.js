@@ -49,7 +49,6 @@ class MyPost extends Component {
       onPostAction,
       openConfirmationModal,
       onCategoryClick,
-      onOpenPost,
       isClickable
     } = self.props;
 
@@ -75,7 +74,7 @@ class MyPost extends Component {
               })
             }
           >
-            <Icon name="delete" />
+            <Icon name="trash" />
           </a>
         </div>
         <Feed.Label
@@ -122,10 +121,7 @@ class MyPost extends Component {
           </Feed.Summary>
           <Feed.Extra text>
             {isClickable ? (
-              <Link
-                to={`${process.env.PUBLIC_URL}/${category.key}/${post.id}`}
-                onClick={() => onOpenPost(post)}
-              >
+              <Link to={`${process.env.PUBLIC_URL}/${category.key}/${post.id}`}>
                 <h3>{post.title}</h3>
               </Link>
             ) : (
@@ -147,7 +143,6 @@ MyPost.propTypes = {
   onPostAction: PropTypes.func.isRequired,
   openConfirmationModal: PropTypes.func.isRequired,
   onCategoryClick: PropTypes.func.isRequired,
-  onOpenPost: PropTypes.func,
   isClickable: PropTypes.bool,
   getPostComments: PropTypes.func.isRequired,
   upVotePost: PropTypes.func.isRequired,
